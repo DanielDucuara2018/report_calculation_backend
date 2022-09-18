@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from sqlalchemy.engine import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
-from report_calculation.model import mapper_registry
+from report_calculation.model.base import mapper_registry
 from config import logger
 
 root_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

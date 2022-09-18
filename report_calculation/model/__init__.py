@@ -1,2 +1,2 @@
-from .base import Base, mapper_registry
-from .crypto_currency import Currency
+from .base import Base
+from .currency import Currency
