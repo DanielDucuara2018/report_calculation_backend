@@ -1,4 +1,5 @@
 from __future__ import annotations
+from typing import Any
 
 from config import binance_client, logger
 from apischema import deserialize
@@ -9,8 +10,8 @@ from report_calculation.model import Currency
 
 EUR_USDT="EURUSDT"
  
-investment_euros: float = 13823.16
-bank_saving_euros: float = 3532
+investment_euros: float = 14323.16
+bank_saving_euros: float = 3520
 
 @dataclass
 class CryptoCurrency:
@@ -27,7 +28,8 @@ def total_crypto_usd() -> float:
     for currency in Currency.get_all():
         try:
             crypto_currency: CryptoCurrency = deserialize(CryptoCurrency, binance_client.get_symbol_ticker(symbol=currency.symbol))
-            total_usd += float(crypto_currency.price)*currency.quantity
+            if quantity := currency.quantity:
+                total_usd += float(crypto_currency.price)*quantity
         except BinanceAPIException as err:
             logger.exception(f"Error {err} {currency.symbol}")
             raise
@@ -77,10 +79,45 @@ def profit_euros() -> float:
 # Total invested money
 
 def invested_usd() -> float:
+    logger.info("Calculating total investment in usd")
     euro_usdt : CryptoCurrency = deserialize(CryptoCurrency, binance_client.get_symbol_ticker(symbol=EUR_USDT))
     return float("{:.2f}".format(investment_euros*float(euro_usdt.price)))
 
 def invested_euros() -> float:
+    logger.info("Calculating total investment in euros")
     return float("{:.2f}".format(investment_euros))
+
+# update Crypto
+
+def update(symbol: str, quantity: str) -> dict[str, Any]:
+    logger.info(f"Updating {symbol} with value {quantity}")
+    result = (Currency.get_by_id(symbol).update(quantity=float(quantity))).to_dict()
+    logger.info(f"Updated {result}")
+    return result
+
+# get crypto
+
+def read(symbol:str) -> dict[str, Any]:
+    logger.info(f"Reading {symbol} data")
+    result = (Currency.get_by_id(symbol)).to_dict()
+    logger.info(f"Result {result}")
+    return result
+
+# create crypto
+
+def create(symbol: str, quantity: str) -> dict[str, Any]:
+    logger.info(f"Adding {symbol} with value {quantity}")
+    result = (Currency(symbol=symbol, quantity=float(quantity)).create()).to_dict()
+    logger.info(f"Added {result}")
+    return result
+
+# delete crypto 
+
+def delete(symbol: str) -> dict[str, Any]:
+    logger.info(f"Deleting {symbol} data")
+    result = (Currency.get_by_id(symbol).delete()).to_dict()
+    logger.info(f"Deleted {result}")
+    return result
+
 
 

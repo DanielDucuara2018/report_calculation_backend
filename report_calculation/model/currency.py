@@ -1,6 +1,6 @@
 from report_calculation.model.base import Base, mapper_registry
-from dataclasses import dataclass, field
-from typing import Optional
+from dataclasses import asdict, dataclass, field
+from typing import Any, Optional
 from sqlalchemy import Column, String, Float
 
 
@@ -14,4 +14,7 @@ class Currency(Base):
 
     symbol: str = field(metadata={"sa": Column(String, primary_key=True)})
     quantity: Optional[float] = field(metadata={"sa": Column(Float, nullable=True)})
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
 
