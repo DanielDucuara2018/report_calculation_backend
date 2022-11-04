@@ -1,15 +1,16 @@
 import configparser
 import os
+from dataclasses import dataclass
 
 from apischema import deserialize
-from dataclasses import dataclass
+from config import logger
 from sqlalchemy.engine import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
 from report_calculation.model.base import mapper_registry
-from config import logger
 
 root_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 
 @dataclass
 class Database:
@@ -24,7 +25,7 @@ def load_database_info() -> Database:
     logger.info("loading postgres configuration from file")
     Config = configparser.ConfigParser()
     Config.read(os.path.join(root_folder, "report_calculation.ini"))
-    return deserialize(Database, Config._sections['database']) 
+    return deserialize(Database, Config._sections["database"])
 
 
 def init() -> sessionmaker:
@@ -43,4 +44,4 @@ def open_session(
     return session_factory()
 
 
-session =  open_session(init())
+session = open_session(init())

@@ -1,14 +1,17 @@
-import os
 import logging
-from binance.client import Client
-from telegram.ext import Application, PicklePersistence
+import os
 from typing import Optional
 
-binance_api_key: Optional[str] = os.environ.get('binance_api_key')
-binance_secret_key: Optional[str] = os.environ.get('binance_secret_key')
-telegram_bot_token: Optional[str] = os.environ.get('telegram_bot_token')
- 
-logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO)
+from binance.client import Client
+from telegram.ext import Application, PicklePersistence
+
+binance_api_key: Optional[str] = os.environ.get("binance_api_key")
+binance_secret_key: Optional[str] = os.environ.get("binance_secret_key")
+telegram_bot_token: Optional[str] = os.environ.get("telegram_bot_token")
+
+logging.basicConfig(
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
+)
 
 
 def init_binance_connection() -> Client:
