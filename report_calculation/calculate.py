@@ -10,7 +10,7 @@ from report_calculation.model import Currency
 
 EUR_USDT="EURUSDT"
  
-investment_euros: float = 14323.16
+investment_euros: float = 14802.52
 bank_saving_euros: float = 3520
 
 @dataclass

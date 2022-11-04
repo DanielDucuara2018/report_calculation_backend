@@ -1,62 +1,82 @@
 from config import logger, telegram_app
 from calculate import total_crypto_usd, total_crypto_euros, total_usd, total_euros, profit_usd, profit_euros, invested_usd, invested_euros, update, read, create, delete
-from telegram import Update
-from telegram.ext import CommandHandler, ContextTypes, MessageHandler, filters
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import CommandHandler, ContextTypes, CallbackQueryHandler
 
 
-# async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-#     """Echo the user message."""
-#     await update.message.reply_text(update.message.text)
+async def start(update_handler: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Sends a message with three inline buttons attached."""
+    keyboard = [
+        [
+            InlineKeyboardButton("total crypto usd", callback_data="total_crypto_usd"),
+            InlineKeyboardButton("total crypto euros", callback_data="total_crypto_euros"),
+        ],
+        [
+            InlineKeyboardButton("total usd", callback_data="total_usd"),
+            InlineKeyboardButton("total euros", callback_data="total_euros"),
+        ],
+        [
+            InlineKeyboardButton("profit usd", callback_data="profit_usd"),
+            InlineKeyboardButton("profit euros", callback_data="profit_euros"),
+        ],
+        [
+            InlineKeyboardButton("investment usd", callback_data="investment_usd"),
+            InlineKeyboardButton("investment euros", callback_data="investment_euros"),
+        ],
+    ]
 
-# telegram_app.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), echo))
+    reply_markup = InlineKeyboardMarkup(keyboard)
 
-async def hello(update_handler: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    logger.info("Testing hello message")
-    await update_handler.message.reply_text(f'Hello {update.effective_user.first_name}')
+    await update_handler.message.reply_text("Please choose:", reply_markup=reply_markup)
+
+async def help_command(update_handler: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Displays info on how to use the bot."""
+    await update_handler.message.reply_text("Use /start to test this bot.")
 
 # Total money on cryptos
 
 async def get_total_crypto_usd(update_handler: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    await update_handler.message.reply_text("Calculating total crypto money in usd")
-    await update_handler.message.reply_text(f"Total crypto money: {total_crypto_usd()} usd")
+    await update_handler.callback_query.edit_message_text("Calculating total crypto money in usd")
+    await update_handler.callback_query.message.reply_text(f"Total crypto money: {total_crypto_usd()} usd")
 
 
 async def get_total_crypto_euros(update_handler: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    await update_handler.message.reply_text("Calculating total crypto money in euros")
-    await update_handler.message.reply_text(f"Total crypto money: {total_crypto_euros()} euros")
+    await update_handler.callback_query.edit_message_text("Calculating total crypto money in euros")
+    await update_handler.callback_query.message.reply_text(f"Total crypto money: {total_crypto_euros()} euros")
 
 # Total money (total money on cryptos + bank savings)
 
 async def get_total_usd(update_handler: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    await update_handler.message.reply_text("Calculating total money in usd (total crypto money + bank savings)")
-    await update_handler.message.reply_text(f"Total money: {total_usd()} usd")
+    await update_handler.callback_query.edit_message_text("Calculating total money in usd (total crypto money + bank savings)")
+    await update_handler.callback_query.message.reply_text(f"Total money: {total_usd()} usd")
 
 
 async def get_total_euros(update_handler: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    await update_handler.message.reply_text("Calculating total money in euros (total crypto money + bank savings)")
-    await update_handler.message.reply_text(f"Total money: {total_euros()} euros")
+    await update_handler.callback_query.edit_message_text("Calculating total money in euros (total crypto money + bank savings)")
+    await update_handler.callback_query.message.reply_text(f"Total money: {total_euros()} euros")
 
 # Total profit (total money on cryptos - investment)
 
 async def get_profit_usd(update_handler: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    await update_handler.message.reply_text("Calculating total profit in usd (total crypto money - investment)")
-    await update_handler.message.reply_text(f"Total profit: {profit_usd()} usd")
+    await update_handler.callback_query.edit_message_text("Calculating total profit in usd (total crypto money - investment)")
+    await update_handler.callback_query.message.reply_text(f"Total profit: {profit_usd()} usd")
 
 
 async def get_profit_euros(update_handler: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    await update_handler.message.reply_text("Calculating total profit in euros (total crypto money - investment)")
-    await update_handler.message.reply_text(f"Total profit: {profit_euros()} euros")
+    await update_handler.callback_query.edit_message_text("Calculating total profit in euros (total crypto money - investment)")
+    await update_handler.callback_query.message.reply_text(f"Total profit: {profit_euros()} euros")
 
 # Total invested money
 
 async def get_investment_usd(update_handler: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    await update_handler.message.reply_text("Total invested money in usd")
-    await update_handler.message.reply_text(f"Total money: {invested_usd()} usd")
+    await update_handler.callback_query.edit_message_text("Total invested money in usd")
+    await update_handler.callback_query.message.reply_text(f"Total money: {invested_usd()} usd")
 
 async def get_investment_euros(update_handler: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    await update_handler.message.reply_text("Total invested money in euros")
-    await update_handler.message.reply_text(f"Total money: {invested_euros()} euros")
+    await update_handler.callback_query.edit_message_text("Total invested money in euros")
+    await update_handler.callback_query.message.reply_text(f"Total money: {invested_euros()} euros")
 
+## CRUD handlers
 # update crypto data
 
 async def update_crypto(update_handler: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -93,14 +113,17 @@ async def delete_crypto(update_handler: Update, context: ContextTypes.DEFAULT_TY
     else:
         await update_handler.message.reply_text(f"Please introduce symbol as arguments")
 
-telegram_app.add_handler(CommandHandler("total_crypto_usd", get_total_crypto_usd))
-telegram_app.add_handler(CommandHandler("total_crypto_euros", get_total_crypto_euros))
-telegram_app.add_handler(CommandHandler("total_usd", get_total_usd))
-telegram_app.add_handler(CommandHandler("total_euros", get_total_euros))
-telegram_app.add_handler(CommandHandler("profit_usd", get_profit_usd))
-telegram_app.add_handler(CommandHandler("profit_euros", get_profit_euros))
-telegram_app.add_handler(CommandHandler("investment_usd", get_investment_usd))
-telegram_app.add_handler(CommandHandler("investment_euros", get_investment_euros))
+
+telegram_app.add_handler(CommandHandler("start", start))
+telegram_app.add_handler(CallbackQueryHandler(get_total_crypto_usd, pattern="total_crypto_usd"))
+telegram_app.add_handler(CallbackQueryHandler(get_total_crypto_euros, pattern="total_crypto_euros"))
+telegram_app.add_handler(CallbackQueryHandler(get_total_usd, pattern="total_usd"))
+telegram_app.add_handler(CallbackQueryHandler(get_total_euros, pattern="total_euros"))
+telegram_app.add_handler(CallbackQueryHandler(get_profit_usd, pattern="profit_usd"))
+telegram_app.add_handler(CallbackQueryHandler(get_profit_euros, pattern="profit_euros"))
+telegram_app.add_handler(CallbackQueryHandler(get_investment_usd, pattern="investment_usd"))
+telegram_app.add_handler(CallbackQueryHandler(get_investment_euros, pattern="investment_euros"))
+telegram_app.add_handler(CommandHandler("help", help_command))
 telegram_app.add_handler(CommandHandler("update", update_crypto))
 telegram_app.add_handler(CommandHandler("get", read_crypto))
 telegram_app.add_handler(CommandHandler("add", create_crypto))
