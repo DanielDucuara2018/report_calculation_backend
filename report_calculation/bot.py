@@ -215,7 +215,9 @@ async def delete_crypto(
     else:
         await update_handler.message.reply_text(f"Please introduce symbol as arguments")
 
+
 # Error handlers
+
 
 async def error_handler(
     update_handler: Update, context: ContextTypes.DEFAULT_TYPE
