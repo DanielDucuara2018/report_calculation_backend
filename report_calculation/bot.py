@@ -12,8 +12,9 @@ from calculate import (
     total_usd,
     update,
 )
-from config import telegram_app
+from config import logger, telegram_app
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
+from telegram.constants import ParseMode
 from telegram.ext import CallbackQueryHandler, CommandHandler, ContextTypes
 
 
@@ -214,6 +215,19 @@ async def delete_crypto(
     else:
         await update_handler.message.reply_text(f"Please introduce symbol as arguments")
 
+# Error handlers
+
+async def error_handler(
+    update_handler: Update, context: ContextTypes.DEFAULT_TYPE
+) -> None:
+    """Log the error and send a telegram message to notify the client."""
+    logger.error("Error %s", context.error)
+    message = (
+        f"An exception was raised while handling a command\n"
+        f"<pre>{context.error}</pre>"
+    )
+    await update_handler.message.reply_text(message, parse_mode=ParseMode.HTML)
+
 
 telegram_app.add_handler(CommandHandler("start", start))
 telegram_app.add_handler(
@@ -237,3 +251,4 @@ telegram_app.add_handler(CommandHandler("update", update_crypto))
 telegram_app.add_handler(CommandHandler("get", read_crypto))
 telegram_app.add_handler(CommandHandler("add", create_crypto))
 telegram_app.add_handler(CommandHandler("delete", delete_crypto))
+telegram_app.add_error_handler(error_handler)

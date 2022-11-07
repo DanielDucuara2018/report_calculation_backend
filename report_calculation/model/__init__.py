@@ -1,2 +1,2 @@
 from .base import Base
-from .currency import Currency
+from .currency import CurrencyPair

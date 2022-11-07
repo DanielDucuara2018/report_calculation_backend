@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 
 @dataclass
-class Currency:
+class CurrencyPair:
 
     symbol: str
     price: str
