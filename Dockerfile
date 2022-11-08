@@ -4,7 +4,6 @@ WORKDIR /app
 
 COPY . .
 
-# RUN apt-get install supervisor
 RUN pip install --no-cache-dir --upgrade pip
 RUN --mount=type=cache,target=/root/.cache pip install --editable .
 
