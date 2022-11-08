@@ -3,6 +3,7 @@ import os
 from typing import Optional
 
 from binance.client import Client
+from fastapi import FastAPI
 from telegram.ext import Application, PicklePersistence
 
 binance_api_key: Optional[str] = os.environ.get("binance_api_key")
@@ -32,6 +33,7 @@ def init_telegram_bot_application() -> Application:
     )
 
 
+app = FastAPI()
 logger = logging.getLogger(__name__)
 binance_client: Client = init_binance_connection()
 telegram_app: Application = init_telegram_bot_application()

@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-from config import logger
-from validations import is_crypto_binance
-
+from report_calculation.config import logger
 from report_calculation.model import CurrencyPair as ModelCurrencyPair
 from report_calculation.schema import CurrencyPair as SchemaCurrencyPair
+from report_calculation.validations import is_crypto_binance
 
 EUR_USDT = "EURUSDT"
 

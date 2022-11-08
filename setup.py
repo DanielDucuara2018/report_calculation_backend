@@ -9,6 +9,7 @@ INSTALL_REQUIRES = [
     "SQLAlchemy==1.4.37",
     "psycopg2==2.9.1",
     "configparser==5.3.0",
+    "fastapi[all]",
 ]
 
 setup(

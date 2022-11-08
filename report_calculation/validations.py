@@ -1,8 +1,8 @@
 from apischema import deserialize
 from binance.exceptions import BinanceAPIException
-from config import binance_client
-from errors import InvalidSymbol
 
+from report_calculation.config import binance_client
+from report_calculation.errors import InvalidSymbol
 from report_calculation.schema import CurrencyPair
 
 

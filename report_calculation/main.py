@@ -1,5 +1,5 @@
-from bot import telegram_app
-from config import logger
+from report_calculation.bot import telegram_app
+from report_calculation.config import logger
 
 
 def main():
