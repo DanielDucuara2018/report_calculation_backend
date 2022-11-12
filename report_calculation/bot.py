@@ -153,42 +153,10 @@ async def get_investment_euros(
 
 
 ## CRUD handlers
-# update crypto data
-
-
-async def update_crypto(
-    update_handler: Update, context: ContextTypes.DEFAULT_TYPE
-) -> None:
-    if context.args:
-        await update_handler.message.reply_text(
-            f"Updating {context.args[0]} with value {context.args[1]}"
-        )
-        await update_handler.message.reply_text(
-            f"Updated {update(context.args[0], context.args[1])}"
-        )
-    else:
-        await update_handler.message.reply_text(
-            f"Please introduce symbol and quantity as arguments"
-        )
-
-
-# get crypto data
-
-
-async def read_crypto(
-    update_handler: Update, context: ContextTypes.DEFAULT_TYPE
-) -> None:
-    if context.args:
-        await update_handler.message.reply_text(f"Reading {context.args[0]} data")
-        await update_handler.message.reply_text(f"Result {read(context.args[0])}")
-    else:
-        await update_handler.message.reply_text(f"Please introduce symbol as arguments")
-
-
 # add new crypto in database
 
 
-async def create_crypto(
+async def create_currency(
     update_handler: Update, context: ContextTypes.DEFAULT_TYPE
 ) -> None:
     if context.args:
@@ -204,10 +172,42 @@ async def create_crypto(
         )
 
 
+# get crypto data
+
+
+async def read_currency(
+    update_handler: Update, context: ContextTypes.DEFAULT_TYPE
+) -> None:
+    if context.args:
+        await update_handler.message.reply_text(f"Reading {context.args[0]} data")
+        await update_handler.message.reply_text(f"Result {read(context.args[0])}")
+    else:
+        await update_handler.message.reply_text(f"Please introduce symbol as arguments")
+
+
+# update crypto data
+
+
+async def update_currency(
+    update_handler: Update, context: ContextTypes.DEFAULT_TYPE
+) -> None:
+    if context.args:
+        await update_handler.message.reply_text(
+            f"Updating {context.args[0]} with value {context.args[1]}"
+        )
+        await update_handler.message.reply_text(
+            f"Updated {update(context.args[0], context.args[1])}"
+        )
+    else:
+        await update_handler.message.reply_text(
+            f"Please introduce symbol and quantity as arguments"
+        )
+
+
 # delete existing from db
 
 
-async def delete_crypto(
+async def delete_currency(
     update_handler: Update, context: ContextTypes.DEFAULT_TYPE
 ) -> None:
     if context.args:
@@ -250,8 +250,8 @@ telegram_app.add_handler(
     CallbackQueryHandler(get_investment_euros, pattern="investment_euros")
 )
 telegram_app.add_handler(CommandHandler("help", help_command))
-telegram_app.add_handler(CommandHandler("update", update_crypto))
-telegram_app.add_handler(CommandHandler("get", read_crypto))
-telegram_app.add_handler(CommandHandler("add", create_crypto))
-telegram_app.add_handler(CommandHandler("delete", delete_crypto))
+telegram_app.add_handler(CommandHandler("update", update_currency))
+telegram_app.add_handler(CommandHandler("get", read_currency))
+telegram_app.add_handler(CommandHandler("add", create_currency))
+telegram_app.add_handler(CommandHandler("delete", delete_currency))
 telegram_app.add_error_handler(error_handler)

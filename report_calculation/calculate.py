@@ -97,39 +97,46 @@ def invested_euros() -> float:
 # update Crypto
 
 
-def update(symbol: str, quantity: str) -> str:
+def update(symbol: str, quantity: str) -> ModelCurrencyPair:
     logger.info("Updating %s with value %s", symbol, quantity)
     result = ModelCurrencyPair.get_by_id(symbol).update(quantity=float(quantity))
     logger.info("Result %s", result)
-    return f"{result}"
+    return result
 
 
 # get crypto
 
 
-def read(symbol: str) -> str:
+def read(symbol: str) -> ModelCurrencyPair:
     logger.info("Reading %s data", symbol)
     result = ModelCurrencyPair.get_by_id(symbol)
     logger.info("Result %s", result)
-    return f"{result}"
+    return result
+
+
+def read_all() -> list[ModelCurrencyPair]:
+    logger.info("Reading all data")
+    result = ModelCurrencyPair.get_all()
+    logger.info("Result %s", result)
+    return result
 
 
 # create crypto
 
 
-def create(symbol: str, quantity: str) -> str:
+def create(symbol: str, quantity: str) -> ModelCurrencyPair:
     logger.info("Adding %s with value %s", symbol, quantity)
-    crypto_currency: SchemaCurrencyPair = is_crypto_binance(symbol)
+    is_crypto_binance(symbol)
     result = ModelCurrencyPair(symbol=symbol, quantity=float(quantity)).create()
     logger.info("Added %s", result)
-    return f"{result}. Total usd {float(crypto_currency.price) * float(quantity)}"
+    return result
 
 
 # delete crypto
 
 
-def delete(symbol: str) -> str:
+def delete(symbol: str) -> ModelCurrencyPair:
     logger.info("Deleting %s data", symbol)
     result = ModelCurrencyPair.get_by_id(symbol).delete()
     logger.info("Deleted %s", result)
-    return f"{result}"
+    return result

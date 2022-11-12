@@ -35,4 +35,5 @@ class Base:
 
     def delete(self: T) -> T:
         db.session.delete(self)
+        db.session.commit()
         return self
