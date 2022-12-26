@@ -14,6 +14,8 @@ logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
 )
 
+logger = logging.getLogger(__name__)
+
 
 def init_binance_connection() -> Client:
     logger.info("Initialising Binance connection")
@@ -34,6 +36,5 @@ def init_telegram_bot_application() -> Application:
 
 
 app = FastAPI()
-logger = logging.getLogger(__name__)
 binance_client: Client = init_binance_connection()
 telegram_app: Application = init_telegram_bot_application()

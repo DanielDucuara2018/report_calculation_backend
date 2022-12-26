@@ -1,3 +1,5 @@
+import logging
+
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.constants import ParseMode
 from telegram.ext import CallbackQueryHandler, CommandHandler, ContextTypes
@@ -16,11 +18,14 @@ from report_calculation.calculate import (
     total_usd,
     update,
 )
-from report_calculation.config import logger, telegram_app
+from report_calculation.config import telegram_app
+
+logger = logging.getLogger(__name__)
 
 
 async def start(update_handler: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Sends a message with three inline buttons attached."""
+    logger.info(f"Launching keyboard buttons")
     keyboard = [
         [
             InlineKeyboardButton("total crypto usd", callback_data="total_crypto_usd"),
@@ -51,6 +56,7 @@ async def help_command(
     update_handler: Update, context: ContextTypes.DEFAULT_TYPE
 ) -> None:
     """Displays info on how to use the bot."""
+    logger.info(f"Launching help command")
     await update_handler.message.reply_text("Use /start to test this bot.")
 
 
@@ -60,6 +66,7 @@ async def help_command(
 async def get_total_crypto_usd(
     update_handler: Update, context: ContextTypes.DEFAULT_TYPE
 ) -> None:
+    logger.info(f"Running get_total_crypto_usd")
     await update_handler.callback_query.edit_message_text(
         "Calculating total crypto money in usd"
     )
@@ -71,6 +78,7 @@ async def get_total_crypto_usd(
 async def get_total_crypto_euros(
     update_handler: Update, context: ContextTypes.DEFAULT_TYPE
 ) -> None:
+    logger.info(f"Running get_total_crypto_euros")
     await update_handler.callback_query.edit_message_text(
         "Calculating total crypto money in euros"
     )
@@ -85,6 +93,7 @@ async def get_total_crypto_euros(
 async def get_total_usd(
     update_handler: Update, context: ContextTypes.DEFAULT_TYPE
 ) -> None:
+    logger.info(f"Running get_total_usd")
     await update_handler.callback_query.edit_message_text(
         "Calculating total money in usd (total crypto money + bank savings)"
     )
@@ -96,6 +105,7 @@ async def get_total_usd(
 async def get_total_euros(
     update_handler: Update, context: ContextTypes.DEFAULT_TYPE
 ) -> None:
+    logger.info(f"Running get_total_euros")
     await update_handler.callback_query.edit_message_text(
         "Calculating total money in euros (total crypto money + bank savings)"
     )
@@ -110,6 +120,7 @@ async def get_total_euros(
 async def get_profit_usd(
     update_handler: Update, context: ContextTypes.DEFAULT_TYPE
 ) -> None:
+    logger.info(f"Running get_profit_usd")
     await update_handler.callback_query.edit_message_text(
         "Calculating total profit in usd (total crypto money - investment)"
     )
@@ -121,6 +132,7 @@ async def get_profit_usd(
 async def get_profit_euros(
     update_handler: Update, context: ContextTypes.DEFAULT_TYPE
 ) -> None:
+    logger.info(f"Running get_profit_euros")
     await update_handler.callback_query.edit_message_text(
         "Calculating total profit in euros (total crypto money - investment)"
     )
@@ -135,6 +147,7 @@ async def get_profit_euros(
 async def get_investment_usd(
     update_handler: Update, context: ContextTypes.DEFAULT_TYPE
 ) -> None:
+    logger.info(f"Running get_investment_usd")
     await update_handler.callback_query.edit_message_text("Total invested money in usd")
     await update_handler.callback_query.message.reply_text(
         f"Total money: {invested_usd()} usd"
@@ -144,6 +157,7 @@ async def get_investment_usd(
 async def get_investment_euros(
     update_handler: Update, context: ContextTypes.DEFAULT_TYPE
 ) -> None:
+    logger.info(f"Running get_investment_euros")
     await update_handler.callback_query.edit_message_text(
         "Total invested money in euros"
     )
@@ -159,6 +173,7 @@ async def get_investment_euros(
 async def create_currency(
     update_handler: Update, context: ContextTypes.DEFAULT_TYPE
 ) -> None:
+    logger.info(f"Running create_currency")
     if context.args:
         await update_handler.message.reply_text(
             f"Adding {context.args[0]} with value {context.args[1]}"
@@ -178,6 +193,7 @@ async def create_currency(
 async def read_currency(
     update_handler: Update, context: ContextTypes.DEFAULT_TYPE
 ) -> None:
+    logger.info(f"Running read_currency")
     if context.args:
         await update_handler.message.reply_text(f"Reading {context.args[0]} data")
         await update_handler.message.reply_text(f"Result {read(context.args[0])}")
@@ -191,6 +207,7 @@ async def read_currency(
 async def update_currency(
     update_handler: Update, context: ContextTypes.DEFAULT_TYPE
 ) -> None:
+    logger.info(f"Running update_currency")
     if context.args:
         await update_handler.message.reply_text(
             f"Updating {context.args[0]} with value {context.args[1]}"
@@ -210,6 +227,7 @@ async def update_currency(
 async def delete_currency(
     update_handler: Update, context: ContextTypes.DEFAULT_TYPE
 ) -> None:
+    logger.info(f"Running delete_currency")
     if context.args:
         await update_handler.message.reply_text(f"Deleting {context.args[0]} data")
         await update_handler.message.reply_text(f"Deleted {delete(context.args[0])}")

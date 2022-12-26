@@ -1,14 +1,17 @@
 from __future__ import annotations
 
-from report_calculation.config import logger
+import logging
+
 from report_calculation.model import CurrencyPair as ModelCurrencyPair
 from report_calculation.schema import CurrencyPair as SchemaCurrencyPair
 from report_calculation.validations import is_crypto_binance
 
+logger = logging.getLogger(__name__)
+
 EUR_USDT = "EURUSDT"
 
-investment_euros: float = 14802.52
-bank_saving_euros: float = 3520
+investment_euros: float = 15302.52
+bank_saving_euros: float = 3620
 
 
 # Total money on cryptos

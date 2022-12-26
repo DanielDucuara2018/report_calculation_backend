@@ -6,10 +6,13 @@ from apischema import deserialize
 from sqlalchemy.engine import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
-from report_calculation.config import logger
 from report_calculation.model.base import mapper_registry
 
 root_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
