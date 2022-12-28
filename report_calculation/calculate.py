@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+from typing import Optional, Union
 
 from report_calculation.model import CurrencyPair as ModelCurrencyPair
 from report_calculation.schema import CurrencyPair as SchemaCurrencyPair
@@ -21,7 +22,7 @@ def total_crypto_usd() -> float:
     logger.info("Calculating total crypto money in usd")
     total_usd = 0
 
-    for currency in ModelCurrencyPair.get_all():
+    for currency in ModelCurrencyPair.get():  # type: ignore
         crypto_currency: SchemaCurrencyPair = is_crypto_binance(currency.symbol)
         if quantity := currency.quantity:
             total_usd += float(crypto_currency.price) * quantity
@@ -102,7 +103,7 @@ def invested_euros() -> float:
 
 def update(symbol: str, quantity: str) -> ModelCurrencyPair:
     logger.info("Updating %s with value %s", symbol, quantity)
-    result = ModelCurrencyPair.get_by_id(symbol).update(quantity=float(quantity))
+    result = ModelCurrencyPair.get(symbol).update(quantity=float(quantity))  # type: ignore
     logger.info("Result %s", result)
     return result
 
@@ -110,16 +111,15 @@ def update(symbol: str, quantity: str) -> ModelCurrencyPair:
 # get crypto
 
 
-def read(symbol: str) -> ModelCurrencyPair:
-    logger.info("Reading %s data", symbol)
-    result = ModelCurrencyPair.get_by_id(symbol)
-    logger.info("Result %s", result)
-    return result
-
-
-def read_all() -> list[ModelCurrencyPair]:
-    logger.info("Reading all data")
-    result = ModelCurrencyPair.get_all()
+def read(
+    symbol: Optional[str] = None,
+) -> Union[ModelCurrencyPair, list[ModelCurrencyPair]]:
+    if symbol:
+        logger.info("Reading %s data", symbol)
+        result = ModelCurrencyPair.get(symbol)
+    else:
+        logger.info("Reading all data")
+        result = ModelCurrencyPair.get()
     logger.info("Result %s", result)
     return result
 
@@ -140,6 +140,6 @@ def create(symbol: str, quantity: str) -> ModelCurrencyPair:
 
 def delete(symbol: str) -> ModelCurrencyPair:
     logger.info("Deleting %s data", symbol)
-    result = ModelCurrencyPair.get_by_id(symbol).delete()
+    result = ModelCurrencyPair.get(symbol).delete()  # type: ignore
     logger.info("Deleted %s", result)
     return result

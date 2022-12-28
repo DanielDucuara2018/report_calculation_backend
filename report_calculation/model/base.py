@@ -1,4 +1,4 @@
-from typing import Type, TypeVar
+from typing import Optional, Type, TypeVar, Union
 
 from sqlalchemy.orm import registry
 
@@ -11,14 +11,14 @@ mapper_registry = registry()
 
 class Base:
     @classmethod
-    def get_all(cls: Type[T]) -> list[T]:
-        return db.session.query(cls).all()
-
-    @classmethod
-    def get_by_id(cls: Type[T], id: str) -> T:
-        result = db.session.query(cls).get(id)
-        if not result:
-            raise NotDataFound(id=id, messages="Not data found in DB")
+    def get(cls: Type[T], id: Optional[str] = None) -> Union[T, list[T]]:
+        query = db.session.query(cls)
+        if id:
+            result = query.get(id)
+            if not result:
+                raise NotDataFound(id=id, messages="Not data found in DB")
+        else:
+            result = query.all()
         return result
 
     def update(self: T, **kwargs) -> T:

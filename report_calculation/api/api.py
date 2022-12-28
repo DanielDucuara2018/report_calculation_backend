@@ -1,4 +1,4 @@
-from report_calculation.calculate import create, delete, read, read_all, update
+from report_calculation.calculate import create, delete, read, update
 from report_calculation.config import app
 from report_calculation.model import CurrencyPair as ModelCurrencyPair
 
@@ -12,12 +12,12 @@ async def create_currency(symbol: str, quantity: str) -> ModelCurrencyPair:
 # get crypto data
 @app.get("/currencies/{symbol}")
 async def read_currency(symbol: str) -> ModelCurrencyPair:
-    return read(symbol)
+    return read(symbol)  # type: ignore
 
 
 @app.get("/currencies")
 async def read_currencies() -> list[ModelCurrencyPair]:
-    return read_all()
+    return read()  # type: ignore
 
 
 # update crypto data

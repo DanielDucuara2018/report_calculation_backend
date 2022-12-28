@@ -195,10 +195,16 @@ async def read_currency(
 ) -> None:
     logger.info(f"Running read_currency")
     if context.args:
-        await update_handler.message.reply_text(f"Reading {context.args[0]} data")
-        await update_handler.message.reply_text(f"Result {read(context.args[0])}")
+        symbol = context.args[0]
+        await update_handler.message.reply_text(f"Reading {symbol} data")
+        await update_handler.message.reply_text(f"Result {read(symbol)}")
     else:
-        await update_handler.message.reply_text(f"Please introduce symbol as arguments")
+        await update_handler.message.reply_text(f"Reading all data")
+        currencies = read()
+        message = "Result: \n"
+        for currency in currencies:  # type: ignore
+            message += f"* <b>{currency.symbol} :</b> {currency.quantity} \n"
+        await update_handler.message.reply_text(message, parse_mode=ParseMode.HTML)
 
 
 # update crypto data
