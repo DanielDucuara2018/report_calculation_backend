@@ -71,7 +71,7 @@ async def get_total_crypto_usd(
         "Calculating total crypto money in usd"
     )
     await update_handler.callback_query.message.reply_text(
-        f"Total crypto money: {total_crypto_usd()} usd"
+        f"Total crypto money: {await total_crypto_usd()} usd"
     )
 
 
@@ -83,7 +83,7 @@ async def get_total_crypto_euros(
         "Calculating total crypto money in euros"
     )
     await update_handler.callback_query.message.reply_text(
-        f"Total crypto money: {total_crypto_euros()} euros"
+        f"Total crypto money: {await total_crypto_euros()} euros"
     )
 
 
@@ -98,7 +98,7 @@ async def get_total_usd(
         "Calculating total money in usd (total crypto money + bank savings)"
     )
     await update_handler.callback_query.message.reply_text(
-        f"Total money: {total_usd()} usd"
+        f"Total money: {await total_usd()} usd"
     )
 
 
@@ -110,7 +110,7 @@ async def get_total_euros(
         "Calculating total money in euros (total crypto money + bank savings)"
     )
     await update_handler.callback_query.message.reply_text(
-        f"Total money: {total_euros()} euros"
+        f"Total money: {await total_euros()} euros"
     )
 
 
@@ -125,7 +125,7 @@ async def get_profit_usd(
         "Calculating total profit in usd (total crypto money - investment)"
     )
     await update_handler.callback_query.message.reply_text(
-        f"Total profit: {profit_usd()} usd"
+        f"Total profit: {await profit_usd()} usd"
     )
 
 
@@ -137,7 +137,7 @@ async def get_profit_euros(
         "Calculating total profit in euros (total crypto money - investment)"
     )
     await update_handler.callback_query.message.reply_text(
-        f"Total profit: {profit_euros()} euros"
+        f"Total profit: {await profit_euros()} euros"
     )
 
 
@@ -150,7 +150,7 @@ async def get_investment_usd(
     logger.info(f"Running get_investment_usd")
     await update_handler.callback_query.edit_message_text("Total invested money in usd")
     await update_handler.callback_query.message.reply_text(
-        f"Total money: {invested_usd()} usd"
+        f"Total money: {await invested_usd()} usd"
     )
 
 
@@ -162,7 +162,7 @@ async def get_investment_euros(
         "Total invested money in euros"
     )
     await update_handler.callback_query.message.reply_text(
-        f"Total money: {invested_euros()} euros"
+        f"Total money: {await invested_euros()} euros"
     )
 
 

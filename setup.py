@@ -10,6 +10,7 @@ INSTALL_REQUIRES = [
     "psycopg2==2.9.1",
     "configparser==5.3.0",
     "fastapi[all]",
+    "asyncio",
 ]
 
 setup(

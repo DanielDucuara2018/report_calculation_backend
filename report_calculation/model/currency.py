@@ -4,11 +4,12 @@ from typing import Optional
 from sqlalchemy import Column, Float, String
 
 from report_calculation.model.base import Base, mapper_registry
+from report_calculation.model.resource import Resource
 
 
 @mapper_registry.mapped
 @dataclass
-class CurrencyPair(Base):
+class CurrencyPair(Base, Resource):
 
     __tablename__ = "currency_pair"
 

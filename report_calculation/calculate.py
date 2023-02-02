@@ -4,38 +4,47 @@ import logging
 from typing import Optional, Union
 
 from report_calculation.model import CurrencyPair as ModelCurrencyPair
-from report_calculation.schema import CurrencyPair as SchemaCurrencyPair
-from report_calculation.validations import is_crypto_binance
+from report_calculation.utils import (
+    async_get_symbol_ticker,
+    async_get_symbol_tickers,
+    get_symbol_ticker,
+)
 
 logger = logging.getLogger(__name__)
 
 EUR_USDT = "EURUSDT"
 
-investment_euros: float = 15302.52
-bank_saving_euros: float = 3620
+investment_euros: float = 16302.52
+bank_saving_euros: float = 3020
 
 
 # Total money on cryptos
 
 
-def total_crypto_usd() -> float:
+async def total_crypto_usd() -> float:
     logger.info("Calculating total crypto money in usd")
-    total_usd = 0
 
-    for currency in ModelCurrencyPair.get():  # type: ignore
-        crypto_currency: SchemaCurrencyPair = is_crypto_binance(currency.symbol)
-        if quantity := currency.quantity:
-            total_usd += float(crypto_currency.price) * quantity
+    currency_pairs = await async_get_symbol_tickers(ModelCurrencyPair.get())
+
+    total_usd = sum(
+        float(currency.price) * currency.quantity
+        for currency in currency_pairs
+        if currency.quantity
+    )
 
     total = float("{:.2f}".format(total_usd))
     logger.info("Total crypto money: %f usd", total)
     return total
 
 
-def total_crypto_euros() -> float:
+async def total_crypto_euros() -> float:
     logger.info("Calculating total crypto money in euros")
-    euro_usdt: SchemaCurrencyPair = is_crypto_binance(EUR_USDT)
-    total_euros = float("{:.2f}".format(total_crypto_usd() / float(euro_usdt.price)))
+
+    currency_pair = await async_get_symbol_ticker(EUR_USDT)
+
+    total_euros = float(
+        "{:.2f}".format(await total_crypto_usd() / float(currency_pair.price))
+    )
     logger.info("Total crypto money: %f euros", total_euros)
     return total_euros
 
@@ -43,19 +52,23 @@ def total_crypto_euros() -> float:
 # Total money (total money on cryptos + bank savings)
 
 
-def total_usd() -> float:
+async def total_usd() -> float:
     logger.info("Calculating total money in usd (total crypto money + bank savings)")
-    euro_usdt: SchemaCurrencyPair = is_crypto_binance(EUR_USDT)
+
+    currency_pair = await async_get_symbol_ticker(EUR_USDT)
+
     total = float(
-        "{:.2f}".format(total_crypto_usd() + bank_saving_euros * float(euro_usdt.price))
+        "{:.2f}".format(
+            await total_crypto_usd() + bank_saving_euros * float(currency_pair.price)
+        )
     )
     logger.info("Total money: %f usd", total)
     return total
 
 
-def total_euros() -> float:
+async def total_euros() -> float:
     logger.info("Calculating total money in euros (total crypto money + bank savings)")
-    total = float("{:.2f}".format(total_crypto_euros() + bank_saving_euros))
+    total = float("{:.2f}".format(await total_crypto_euros() + bank_saving_euros))
     logger.info("Total money: %f euro", total)
     return total
 
@@ -63,19 +76,23 @@ def total_euros() -> float:
 # Total profit (total money on cryptos - investment)
 
 
-def profit_usd() -> float:
+async def profit_usd() -> float:
     logger.info("Calculating total profit in usd (total crypto money - investment)")
-    euro_usdt: SchemaCurrencyPair = is_crypto_binance(EUR_USDT)
+
+    currency_pair = await async_get_symbol_ticker(EUR_USDT)
+
     diff = float(
-        "{:.2f}".format(total_crypto_usd() - investment_euros * float(euro_usdt.price))
+        "{:.2f}".format(
+            await total_crypto_usd() - investment_euros * float(currency_pair.price)
+        )
     )
     logger.info("Total profit: %f usd", diff)
     return diff
 
 
-def profit_euros() -> float:
+async def profit_euros() -> float:
     logger.info("Calculating total profit in euros (total crypto money - investment)")
-    diff = float("{:.2f}".format(total_crypto_euros() - investment_euros))
+    diff = float("{:.2f}".format(await total_crypto_euros() - investment_euros))
     logger.info("Total profit: %f euros", diff)
     return diff
 
@@ -83,15 +100,17 @@ def profit_euros() -> float:
 # Total invested money
 
 
-def invested_usd() -> float:
+async def invested_usd() -> float:
     logger.info("Calculating total investment in usd")
-    euro_usdt: SchemaCurrencyPair = is_crypto_binance(EUR_USDT)
-    invested_usd = float("{:.2f}".format(investment_euros * float(euro_usdt.price)))
+
+    currency_pair = await async_get_symbol_ticker(EUR_USDT)
+
+    invested_usd = float("{:.2f}".format(investment_euros * float(currency_pair.price)))
     logger.info("Investment: %f usd", invested_usd)
     return invested_usd
 
 
-def invested_euros() -> float:
+async def invested_euros() -> float:
     logger.info("Calculating total investment in euros")
     investment = float("{:.2f}".format(investment_euros))
     logger.info("Investment: %f euros", investment)
@@ -129,7 +148,7 @@ def read(
 
 def create(symbol: str, quantity: str) -> ModelCurrencyPair:
     logger.info("Adding %s with value %s", symbol, quantity)
-    is_crypto_binance(symbol)
+    get_symbol_ticker(symbol)
     result = ModelCurrencyPair(symbol=symbol, quantity=float(quantity)).create()
     logger.info("Added %s", result)
     return result
