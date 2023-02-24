@@ -11,6 +11,25 @@ mapper_registry = registry()
 
 class Base:
     @classmethod
+    def find(cls: Type[T], **filters) -> list[T]:
+        query = db.session.query(cls)
+
+        for_equality = True
+        for key, value in filters.items():
+            if key.startswith("!"):
+                key = key[1:]
+                for_equality = False
+
+            column = getattr(cls, key)
+
+            if for_equality:
+                query = query.filter(column == value)
+            else:
+                query = query.filter(column != value)
+
+        return query.all()
+
+    @classmethod
     def get(cls: Type[T], id: Optional[str] = None) -> Union[T, list[T]]:
         query = db.session.query(cls)
         if id:
