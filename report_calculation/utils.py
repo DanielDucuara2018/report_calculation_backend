@@ -47,6 +47,7 @@ def _execute_binance_function(
     try:
         return deserialize(SchemaCurrencyPair, func(symbol=symbol))
     except BinanceAPIException:
+        logger.error("Invalid symbol %s in Binance Exchange", symbol)
         raise InvalidSymbol(
             symbol=symbol, messages=f"Invalid symbol {symbol} in Binance Exchange"
         )
