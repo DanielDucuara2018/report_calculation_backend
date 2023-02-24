@@ -18,7 +18,7 @@ repos:
     hooks:
     -   id: autoflake
 -   repo: https://github.com/pre-commit/mirrors-isort
-    rev: v5.5.5  # Upgrade to >=5.6.0 will break the imports from intel.test.tools
+    rev: v5.10.1 # Upgrade to >=5.6.0 will break the imports from intel.test.tools
     hooks:
     -   id: isort
 -   repo: https://github.com/lovesegfault/beautysh

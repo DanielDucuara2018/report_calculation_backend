@@ -4,20 +4,17 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.constants import ParseMode
 from telegram.ext import CallbackQueryHandler, CommandHandler, ContextTypes
 
-from report_calculation.calculate import (
-    create,
-    delete,
+from report_calculation.actions.calculate import (
     invested_euros,
     invested_usd,
     profit_euros,
     profit_usd,
-    read,
     total_crypto_euros,
     total_crypto_usd,
     total_euros,
     total_usd,
-    update,
 )
+from report_calculation.actions.currency import create, delete, read, update
 from report_calculation.config import telegram_app
 
 logger = logging.getLogger(__name__)
@@ -28,14 +25,14 @@ async def start(update_handler: Update, context: ContextTypes.DEFAULT_TYPE) -> N
     logger.info(f"Launching keyboard buttons")
     keyboard = [
         [
+            InlineKeyboardButton("total usd", callback_data="total_usd"),
+            InlineKeyboardButton("total euros", callback_data="total_euros"),
+        ],
+        [
             InlineKeyboardButton("total crypto usd", callback_data="total_crypto_usd"),
             InlineKeyboardButton(
                 "total crypto euros", callback_data="total_crypto_euros"
             ),
-        ],
-        [
-            InlineKeyboardButton("total usd", callback_data="total_usd"),
-            InlineKeyboardButton("total euros", callback_data="total_euros"),
         ],
         [
             InlineKeyboardButton("profit usd", callback_data="profit_usd"),
@@ -256,6 +253,16 @@ async def error_handler(
     await update_handler.message.reply_text(message, parse_mode=ParseMode.HTML)
 
 
+# get bot_info
+
+
+async def bot_info(update_handler: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    logger.info(f"Geting bot information")
+    await update_handler.message.reply_text(
+        f"bot information {await context.bot.get_me()}"
+    )
+
+
 telegram_app.add_handler(CommandHandler("start", start))
 telegram_app.add_handler(
     CallbackQueryHandler(get_total_crypto_usd, pattern="total_crypto_usd")
@@ -278,4 +285,5 @@ telegram_app.add_handler(CommandHandler("update", update_currency))
 telegram_app.add_handler(CommandHandler("get", read_currency))
 telegram_app.add_handler(CommandHandler("add", create_currency))
 telegram_app.add_handler(CommandHandler("delete", delete_currency))
+telegram_app.add_handler(CommandHandler("bot", bot_info))
 telegram_app.add_error_handler(error_handler)
