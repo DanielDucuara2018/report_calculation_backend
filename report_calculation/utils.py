@@ -9,14 +9,14 @@ from binance.exceptions import BinanceAPIException
 from report_calculation.config import binance_client, init_binance_connection_async
 from report_calculation.errors import InvalidSymbol
 from report_calculation.model import CurrencyPair as ModelCurrencyPair
-from report_calculation.schema import CurrencyPair as SchemaCurrencyPair
+from report_calculation.schema import CurrencyPairResponse as SchemaCurrencyPairResponse
 
 logger = logging.getLogger(__name__)
 
 
 async def async_get_symbol_tickers(currencies: list[ModelCurrencyPair]):
     client: AsyncClient = await init_binance_connection_async()
-    currency_pairs: list[SchemaCurrencyPair] = await asyncio.gather(
+    currency_pairs: list[SchemaCurrencyPairResponse] = await asyncio.gather(
         *(
             _async_execute_binance_function(
                 client.get_symbol_ticker, currency.symbol, quantity=currency.quantity
@@ -30,7 +30,7 @@ async def async_get_symbol_tickers(currencies: list[ModelCurrencyPair]):
 
 async def async_get_symbol_ticker(symbol: str):
     client: AsyncClient = await init_binance_connection_async()
-    currency_pair: SchemaCurrencyPair = await _async_execute_binance_function(
+    currency_pair: SchemaCurrencyPairResponse = await _async_execute_binance_function(
         client.get_symbol_ticker, symbol
     )
     await client.close_connection()
@@ -43,9 +43,9 @@ def get_symbol_ticker(symbol: str):
 
 def _execute_binance_function(
     func: Callable[[Any], Any], symbol: str
-) -> SchemaCurrencyPair:
+) -> SchemaCurrencyPairResponse:
     try:
-        return deserialize(SchemaCurrencyPair, func(symbol=symbol))
+        return deserialize(SchemaCurrencyPairResponse, func(symbol=symbol))
     except BinanceAPIException:
         logger.error("Invalid symbol %s in Binance Exchange", symbol)
         raise InvalidSymbol(
@@ -55,10 +55,10 @@ def _execute_binance_function(
 
 async def _async_execute_binance_function(
     func: Callable[[Any], Any], symbol: str, *, quantity: Optional[float] = None
-) -> SchemaCurrencyPair:
+) -> SchemaCurrencyPairResponse:
     try:
-        currency_pair: SchemaCurrencyPair = deserialize(
-            SchemaCurrencyPair,
+        currency_pair: SchemaCurrencyPairResponse = deserialize(
+            SchemaCurrencyPairResponse,
             await func(symbol=symbol),
         )
         currency_pair.quantity = quantity
