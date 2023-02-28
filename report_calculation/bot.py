@@ -1,6 +1,7 @@
 import logging
+from typing import Optional
 
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update, User
 from telegram.constants import ParseMode
 from telegram.ext import CallbackQueryHandler, CommandHandler, ContextTypes
 
@@ -16,8 +17,19 @@ from report_calculation.actions.calculate import (
 )
 from report_calculation.actions.currency import create, delete, read, update
 from report_calculation.config import telegram_app
+from report_calculation.errors import NotUserFound
+from report_calculation.model import User as ModelUser
 
 logger = logging.getLogger(__name__)
+
+
+def _get_user(
+    bot_info: User,
+) -> Optional[ModelUser]:  # TODO add <class 'telegram._user.User'> typing
+    users = ModelUser.find(telegram_id=str(bot_info.id))
+    if users:
+        return users[-1]
+    return None
 
 
 async def start(update_handler: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -68,7 +80,7 @@ async def get_total_crypto_usd(
         "Calculating total crypto money in usd"
     )
     await update_handler.callback_query.message.reply_text(
-        f"Total crypto money: {await total_crypto_usd()} usd"
+        f"Total crypto money: {await total_crypto_usd(_get_user(await context.bot.get_me()))} usd"
     )
 
 
@@ -80,7 +92,7 @@ async def get_total_crypto_euros(
         "Calculating total crypto money in euros"
     )
     await update_handler.callback_query.message.reply_text(
-        f"Total crypto money: {await total_crypto_euros()} euros"
+        f"Total crypto money: {await total_crypto_euros(_get_user(await context.bot.get_me()))} euros"
     )
 
 
@@ -95,7 +107,7 @@ async def get_total_usd(
         "Calculating total money in usd (total crypto money + bank savings)"
     )
     await update_handler.callback_query.message.reply_text(
-        f"Total money: {await total_usd()} usd"
+        f"Total money: {await total_usd(_get_user(await context.bot.get_me()))} usd"
     )
 
 
@@ -107,7 +119,7 @@ async def get_total_euros(
         "Calculating total money in euros (total crypto money + bank savings)"
     )
     await update_handler.callback_query.message.reply_text(
-        f"Total money: {await total_euros()} euros"
+        f"Total money: {await total_euros(_get_user(await context.bot.get_me()))} euros"
     )
 
 
@@ -122,7 +134,7 @@ async def get_profit_usd(
         "Calculating total profit in usd (total crypto money - investment)"
     )
     await update_handler.callback_query.message.reply_text(
-        f"Total profit: {await profit_usd()} usd"
+        f"Total profit: {await profit_usd(_get_user(await context.bot.get_me()))} usd"
     )
 
 
@@ -134,7 +146,7 @@ async def get_profit_euros(
         "Calculating total profit in euros (total crypto money - investment)"
     )
     await update_handler.callback_query.message.reply_text(
-        f"Total profit: {await profit_euros()} euros"
+        f"Total profit: {await profit_euros(_get_user(await context.bot.get_me()))} euros"
     )
 
 
@@ -147,7 +159,7 @@ async def get_investment_usd(
     logger.info(f"Running get_investment_usd")
     await update_handler.callback_query.edit_message_text("Total invested money in usd")
     await update_handler.callback_query.message.reply_text(
-        f"Total money: {await invested_usd()} usd"
+        f"Total money: {await invested_usd(_get_user(await context.bot.get_me()))} usd"
     )
 
 
@@ -159,7 +171,7 @@ async def get_investment_euros(
         "Total invested money in euros"
     )
     await update_handler.callback_query.message.reply_text(
-        f"Total money: {await invested_euros()} euros"
+        f"Total money: {await invested_euros(_get_user(await context.bot.get_me()))} euros"
     )
 
 
@@ -171,12 +183,17 @@ async def create_currency(
     update_handler: Update, context: ContextTypes.DEFAULT_TYPE
 ) -> None:
     logger.info(f"Running create_currency")
+
+    user: ModelUser = _get_user(await context.bot.get_me())
+    if not user:
+        raise NotUserFound(message="Not user found")
+
     if context.args:
         await update_handler.message.reply_text(
             f"Adding {context.args[0]} with value {context.args[1]}"
         )
         await update_handler.message.reply_text(
-            f"Added {create(context.args[0], context.args[1])}"
+            f"Added {create(user.user_id, context.args[0], context.args[1])}"
         )
     else:
         await update_handler.message.reply_text(
@@ -191,13 +208,18 @@ async def read_currency(
     update_handler: Update, context: ContextTypes.DEFAULT_TYPE
 ) -> None:
     logger.info(f"Running read_currency")
+
+    user: ModelUser = _get_user(await context.bot.get_me())
+    if not user:
+        raise NotUserFound(message="Not user found")
+
     if context.args:
         symbol = context.args[0]
         await update_handler.message.reply_text(f"Reading {symbol} data")
-        await update_handler.message.reply_text(f"Result {read(symbol)}")
+        await update_handler.message.reply_text(f"Result {read(user.user_id, symbol)}")
     else:
         await update_handler.message.reply_text(f"Reading all data")
-        currencies = read()
+        currencies = read(user.user_id)
         message = "Result: \n"
         for currency in currencies:  # type: ignore
             message += f"* <b>{currency.symbol} :</b> {currency.quantity} \n"
@@ -211,12 +233,17 @@ async def update_currency(
     update_handler: Update, context: ContextTypes.DEFAULT_TYPE
 ) -> None:
     logger.info(f"Running update_currency")
+
+    user: ModelUser = _get_user(await context.bot.get_me())
+    if not user:
+        raise NotUserFound(message="Not user found")
+
     if context.args:
         await update_handler.message.reply_text(
             f"Updating {context.args[0]} with value {context.args[1]}"
         )
         await update_handler.message.reply_text(
-            f"Updated {update(context.args[0], context.args[1])}"
+            f"Updated {update(user.user_id, context.args[0], context.args[1])}"
         )
     else:
         await update_handler.message.reply_text(
@@ -231,9 +258,16 @@ async def delete_currency(
     update_handler: Update, context: ContextTypes.DEFAULT_TYPE
 ) -> None:
     logger.info(f"Running delete_currency")
+
+    user: ModelUser = _get_user(await context.bot.get_me())
+    if not user:
+        raise NotUserFound(message="Not user found")
+
     if context.args:
         await update_handler.message.reply_text(f"Deleting {context.args[0]} data")
-        await update_handler.message.reply_text(f"Deleted {delete(context.args[0])}")
+        await update_handler.message.reply_text(
+            f"Deleted {delete(user.user_id, context.args[0])}"
+        )
     else:
         await update_handler.message.reply_text(f"Please introduce symbol as arguments")
 
@@ -250,7 +284,9 @@ async def error_handler(
         f"An exception was raised while handling a command\n"
         f"<pre>{context.error}</pre>"
     )
-    await update_handler.message.reply_text(message, parse_mode=ParseMode.HTML)
+    await update_handler.message.reply_text(
+        message, parse_mode=ParseMode.HTML
+    )  # TODO To fix, it is not working
 
 
 # get bot_info
