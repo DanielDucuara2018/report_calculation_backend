@@ -1,4 +1,4 @@
-from typing import Optional, Type, TypeVar, Union
+from typing import Type, TypeVar, Union
 
 from sqlalchemy.orm import registry
 
@@ -30,12 +30,12 @@ class Base:
         return query.all()
 
     @classmethod
-    def get(cls: Type[T], id: Optional[str] = None) -> Union[T, list[T]]:
+    def get(cls: Type[T], **kwargs) -> Union[T, list[T]]:
         query = db.session.query(cls)
-        if id:
-            result = query.get(id)
+        if kwargs:
+            result = query.get(kwargs)
             if not result:
-                raise NotDataFound(id=id, messages="Not data found in DB")
+                raise NotDataFound(key=kwargs, messages="Not data found in DB")
         else:
             result = query.all()
         return result
