@@ -14,8 +14,8 @@ if TYPE_CHECKING:
     from report_calculation.model.currency import CurrencyPair
 
 
-def idv2(prefix: str, *, version: int = 0) -> str:
-    random_bytes = (version << 32) + random.getrandbits(32)
+def idv2(prefix: str, *, version: int = 0) -> str:  # fix calculation
+    random_bytes = (version << 127) + random.getrandbits(32)
     return f"{prefix}-{random_bytes:032x}"
 
 
@@ -35,17 +35,13 @@ class User(Base, Resource):
             )
         },
     )
-    telegram_id: Optional[str] = field(metadata={"sa": Column(String, nullable=False)})
+    telegram_id: Optional[str] = field(
+        metadata={"sa": Column(String, nullable=False)}
+    )  # TODO this value can be shared among users ?
     investment_euros: Optional[float] = field(
         metadata={"sa": Column(Float, default=float(0), nullable=False)}
     )
-    invesment_usd: Optional[float] = field(
-        metadata={"sa": Column(Float, default=float(0), nullable=False)}
-    )
     savings_euros: Optional[float] = field(
-        metadata={"sa": Column(Float, default=float(0), nullable=False)}
-    )
-    savings_usd: Optional[float] = field(
         metadata={"sa": Column(Float, default=float(0), nullable=False)}
     )
 
@@ -54,5 +50,5 @@ class User(Base, Resource):
     # association between User -> CurrencyPair
     currency_pairs: list["CurrencyPair"] = field(
         default_factory=list,
-        metadata={"sa": relationship("CurrencyPair", back_populates="users")},
+        metadata={"sa": relationship("CurrencyPair")},
     )
