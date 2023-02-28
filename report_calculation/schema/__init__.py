@@ -1,2 +1,2 @@
-from .currency import CurrencyPair
-from .user import User
+from .currency import CurrencyPairRequest, CurrencyPairResponse
+from .user import UserRequest, UserResponse
