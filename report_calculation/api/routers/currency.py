@@ -1,7 +1,9 @@
+from typing import Optional, Union
+
 from fastapi import APIRouter
 
 from report_calculation.actions.currency import create, delete, read, update
-from report_calculation.schema import CurrencyPair as SchemaCurrencyPair
+from report_calculation.schema import CurrencyPairResponse as SchemaCurrencyPairResponse
 
 router = APIRouter(
     prefix="/currencies",
@@ -9,32 +11,36 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
+# TODO check if all methods can use CurrencyPairEntry
 
 ## Currencies
 # add new crypto in database
-@router.post("/{symbol}")
-async def create_currency(symbol: str, quantity: str) -> SchemaCurrencyPair:
-    return create(symbol, quantity)
+@router.post("/")
+async def create_currency(
+    user_id: str, symbol: str, quantity: Optional[float] = None
+) -> SchemaCurrencyPairResponse:
+    return create(user_id, symbol, quantity)
 
 
 # get crypto data
-@router.get("/{symbol}")
-async def read_currency(symbol: str) -> SchemaCurrencyPair:
-    return read(symbol)  # type: ignore
-
-
 @router.get("/")
-async def read_currencies() -> list[SchemaCurrencyPair]:
-    return read()  # type: ignore
+async def read_currency(
+    user_id: str, symbol: Optional[str] = None
+) -> Union[list[SchemaCurrencyPairResponse], SchemaCurrencyPairResponse]:
+    if symbol:
+        return read(user_id, symbol)
+    return read(user_id)
 
 
 # update crypto data
-@router.put("/{symbol}")
-async def update_currency(symbol: str, quantity: str) -> SchemaCurrencyPair:
-    return update(symbol, quantity)
+@router.put("/")
+async def update_currency(
+    user_id: str, symbol: str, quantity: Optional[float] = None
+) -> SchemaCurrencyPairResponse:
+    return update(user_id, symbol, quantity)
 
 
 # delete existing from db
-@router.delete("/{symbol}")
-async def delete_currency(symbol: str) -> SchemaCurrencyPair:
-    return delete(symbol)
+@router.delete("/")
+async def delete_currency(user_id: str, symbol: str) -> SchemaCurrencyPairResponse:
+    return delete(user_id, symbol)
