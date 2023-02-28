@@ -36,13 +36,5 @@ class CurrencyPair(Base, Resource):
         metadata={"sa": Column(Float, default=float(0), nullable=False)}
     )
 
-    # relationships
-
-    # association between CurrencyPair -> User
-    users: list[User] = field(
-        default_factory=list,
-        metadata={"sa": relationship("User", back_populates="currency_pairs")},
-    )
-
     def __str__(self) -> str:
         return f"Pair {self.symbol} with {self.quantity} tokens"
