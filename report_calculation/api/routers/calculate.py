@@ -12,6 +12,7 @@ from report_calculation.actions.calculate import (
     total_euros,
     total_usd,
 )
+from report_calculation.model import User as ModelUser
 
 router = APIRouter(
     prefix="/calculate",
@@ -47,5 +48,6 @@ calculate_action = {
 
 
 @router.get("/{action}")
-async def calculate_total_usd(action: CalculateActions) -> float:
-    return await calculate_action.get(action)()
+async def calculate_total_usd(action: CalculateActions, user_id: str) -> float:
+    user: ModelUser = ModelUser.get(user_id=user_id)
+    return await calculate_action.get(action)(user)
