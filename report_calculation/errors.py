@@ -31,3 +31,9 @@ class NotDataFound(Error):
     code = 1001
     reason = "not-data-found"
     description = "Not data found in DB"
+
+
+class NotUserFound(Error):
+    code = 1002
+    reason = "not-user-found"
+    description = "Not user found in DB"
