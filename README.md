@@ -7,6 +7,7 @@ Report about my investments
 ```sh
 pip install --user pre-commit
 pre-commit install
+pre-commit run --all-files
 ```
 
 ## pytho venv

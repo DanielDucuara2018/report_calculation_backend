@@ -16,13 +16,13 @@ services:
       report_bridge:
         ipv4_address: 169.254.6.2
     env_file:
-      - .env    
+      - .env
     volumes:
       - ./:/app/
       - /app/report_calculation.egg-info/
     depends_on:
       - postgres
-  
+
   postgres:
     image: postgres:10-alpine
     networks:
