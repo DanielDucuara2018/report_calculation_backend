@@ -3,8 +3,8 @@ from __future__ import annotations
 import logging
 from typing import Optional, Union
 
+from report_calculation.binance_client import get_symbol_ticker
 from report_calculation.model import CurrencyPair as ModelCurrencyPair
-from report_calculation.utils import get_symbol_ticker
 
 logger = logging.getLogger(__name__)
 

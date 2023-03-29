@@ -15,5 +15,6 @@ class UserResponse(UserRequest):
 
     user_id: Optional[str] = None
     currency_pairs: Optional[list] = None
+    purchases: Optional[list] = None
     update_date: Optional[datetime] = None
     creation_date: Optional[datetime] = None

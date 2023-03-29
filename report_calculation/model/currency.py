@@ -8,8 +8,8 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql.schema import ForeignKey
 
 from report_calculation.model.base import Base, mapper_registry
+from report_calculation.model.purchase import Purchase
 from report_calculation.model.resource import Resource
-from report_calculation.model.user import User
 
 
 @mapper_registry.mapped
@@ -34,6 +34,14 @@ class CurrencyPair(Base, Resource):
 
     quantity: Optional[float] = field(
         metadata={"sa": Column(Float, default=float(0), nullable=False)}
+    )
+
+    # relationships
+
+    # association between Purchases -> Purchases
+    purchases: list["Purchase"] = field(
+        default_factory=list,
+        metadata={"sa": relationship("Purchase")},
     )
 
     def __str__(self) -> str:

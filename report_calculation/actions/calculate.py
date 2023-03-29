@@ -3,10 +3,13 @@ from __future__ import annotations
 import logging
 from typing import Optional
 
+from report_calculation.binance_client import (
+    async_get_symbol_ticker,
+    async_get_symbol_tickers,
+)
 from report_calculation.errors import NotUserFound
 from report_calculation.model import CurrencyPair as ModelCurrencyPair
 from report_calculation.model import User as ModelUser
-from report_calculation.utils import async_get_symbol_ticker, async_get_symbol_tickers
 
 logger = logging.getLogger(__name__)
 

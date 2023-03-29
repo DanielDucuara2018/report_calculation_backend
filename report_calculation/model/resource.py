@@ -11,6 +11,8 @@ class Resource:
 
     __sa_dataclass_metadata_key__ = "sa"
 
+    # TODO: Add description + alembic migration
+
     update_date: Optional[datetime] = field(
         init=False,
         metadata={

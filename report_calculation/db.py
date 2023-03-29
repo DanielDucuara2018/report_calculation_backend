@@ -24,10 +24,12 @@ class Database:
     user: str
 
 
-def load_database_info() -> Database:
-    logger.info("loading postgres configuration from file")
+def load_database_info(
+    path: str = os.path.join(root_folder, "report_calculation.ini")
+) -> Database:
+    logger.info("loading postgres configuration from file %s", path)
     Config = configparser.ConfigParser()
-    Config.read(os.path.join(root_folder, "report_calculation.ini"))
+    Config.read(path)
     return deserialize(Database, Config._sections["database"])
 
 
