@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from typing import Optional
 
@@ -34,16 +34,16 @@ class Purchase(Base, Resource):
 
     symbol: str = field(metadata={"sa": Column(String)})
 
+    date: Optional[datetime] = field(
+        metadata={"sa": Column(DateTime(timezone=True), nullable=True)},
+    )
+
     quantity: Optional[float] = field(
-        metadata={"sa": Column(Float, default=float(0), nullable=False)}
+        default_factory=float, metadata={"sa": Column(Float, nullable=False)}
     )
 
     price: Optional[float] = field(
-        metadata={"sa": Column(Float, default=float(0), nullable=False)}
-    )
-
-    date: Optional[datetime] = field(
-        metadata={"sa": Column(DateTime(timezone=True), nullable=True)},
+        default_factory=float, metadata={"sa": Column(Float, nullable=False)}
     )
 
     # TODO add state -> options ["SOLD", "ACTIVE"]
@@ -62,3 +62,6 @@ class Purchase(Base, Resource):
         return self.quantity * (
             float(get_symbol_ticker(self.symbol).price) - self.price
         )
+
+    def __call__(self):
+        return {**asdict(self), **{"gain": self.gain}}

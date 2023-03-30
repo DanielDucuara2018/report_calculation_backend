@@ -33,7 +33,7 @@ class CurrencyPair(Base, Resource):
     # attributes
 
     quantity: Optional[float] = field(
-        metadata={"sa": Column(Float, default=float(0), nullable=False)}
+        default_factory=float, metadata={"sa": Column(Float, nullable=False)}
     )
 
     # relationships

@@ -35,10 +35,10 @@ class User(Base, Resource):
         metadata={"sa": Column(String, nullable=False)}
     )  # TODO this value can be shared among users ?
     investment_euros: Optional[float] = field(
-        metadata={"sa": Column(Float, default=float(0), nullable=False)}
+        default_factory=float, metadata={"sa": Column(Float, nullable=False)}
     )
     savings_euros: Optional[float] = field(
-        metadata={"sa": Column(Float, default=float(0), nullable=False)}
+        default_factory=float, metadata={"sa": Column(Float, nullable=False)}
     )
 
     # relationships
