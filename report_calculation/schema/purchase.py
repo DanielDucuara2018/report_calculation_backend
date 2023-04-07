@@ -11,6 +11,7 @@ class PurchaseRequest(BaseModel):
     quantity: Optional[float] = None
     price: Optional[float] = None
     date: Optional[datetime] = None
+    description: Optional[str] = None
 
 
 class PurchaseResponse(PurchaseRequest):

@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Optional
 
-from sqlalchemy import Column, DateTime
+from sqlalchemy import Column, DateTime, String
 from sqlalchemy.sql import func
 
 
@@ -11,7 +11,7 @@ class Resource:
 
     __sa_dataclass_metadata_key__ = "sa"
 
-    # TODO: Add description + alembic migration
+    description: Optional[str] = field(metadata={"sa": Column(String)})
 
     update_date: Optional[datetime] = field(
         init=False,

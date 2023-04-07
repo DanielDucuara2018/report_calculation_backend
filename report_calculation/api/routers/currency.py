@@ -3,7 +3,7 @@ from typing import Optional, Union
 from fastapi import APIRouter
 
 from report_calculation.actions.currency import create, delete, read, update
-from report_calculation.schema import CurrencyPairResponse
+from report_calculation.schema import CurrencyPairRequest, CurrencyPairResponse
 
 router = APIRouter(
     prefix="/currencies",
@@ -17,9 +17,9 @@ router = APIRouter(
 # add new crypto in database
 @router.post("/")
 async def create_currency(
-    user_id: str, symbol: str, quantity: Optional[float] = None
+    user_id: str, symbol: str, data: CurrencyPairRequest
 ) -> CurrencyPairResponse:
-    return create(user_id, symbol, quantity)
+    return create(user_id, symbol, data.quantity, data.description)
 
 
 # get crypto data
@@ -35,9 +35,9 @@ async def read_currency(
 # update crypto data
 @router.put("/")
 async def update_currency(
-    user_id: str, symbol: str, quantity: Optional[float] = None
+    user_id: str, symbol: str, data: CurrencyPairRequest
 ) -> CurrencyPairResponse:
-    return update(user_id, symbol, quantity)
+    return update(user_id, symbol, data.quantity, data.description)
 
 
 # delete existing from db

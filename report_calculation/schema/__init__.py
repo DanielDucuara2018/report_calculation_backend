@@ -1,3 +1,7 @@
-from .currency import CurrencyPairRequest, CurrencyPairResponse
+from .currency import (
+    CurrencyPairBinanceResponse,
+    CurrencyPairRequest,
+    CurrencyPairResponse,
+)
 from .purchase import PurchaseRequest, PurchaseResponse
 from .user import UserRequest, UserResponse

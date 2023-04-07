@@ -7,18 +7,22 @@ from pydantic import BaseModel
 
 class CurrencyPairRequest(BaseModel):
 
-    symbol: Optional[str] = None
-    user_id: Optional[str] = None
     quantity: Optional[float] = None
+    description: Optional[str] = None
 
 
-@dataclass
-class CurrencyPairResponse:  # TODO check if it can use BaseModel
+class CurrencyPairResponse(CurrencyPairRequest):
 
     symbol: Optional[str] = None
     user_id: Optional[str] = None
     price: Optional[str] = None
     purchases: Optional[list] = None
-    quantity: Optional[float] = None
     creation_date: Optional[datetime] = None
     update_date: Optional[datetime] = None
+
+
+@dataclass
+class CurrencyPairBinanceResponse:
+
+    symbol: Optional[str] = None
+    price: Optional[str] = None

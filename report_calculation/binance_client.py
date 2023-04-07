@@ -10,7 +10,7 @@ from binance.exceptions import BinanceAPIException
 
 from report_calculation.config import binance_client, init_binance_connection_async
 from report_calculation.errors import InvalidSymbol
-from report_calculation.schema import CurrencyPairResponse
+from report_calculation.schema import CurrencyPairBinanceResponse
 
 if TYPE_CHECKING:
     from report_calculation.model import CurrencyPair
@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 async def async_get_symbol_tickers(currencies: list[CurrencyPair]):
     client: AsyncClient = await init_binance_connection_async()
-    currency_pairs: list[CurrencyPairResponse] = await asyncio.gather(
+    currency_pairs: list[CurrencyPairBinanceResponse] = await asyncio.gather(
         *(
             _async_execute_binance_function(
                 client.get_symbol_ticker, currency.symbol, quantity=currency.quantity
@@ -34,22 +34,22 @@ async def async_get_symbol_tickers(currencies: list[CurrencyPair]):
 
 async def async_get_symbol_ticker(symbol: str):
     client: AsyncClient = await init_binance_connection_async()
-    currency_pair: CurrencyPairResponse = await _async_execute_binance_function(
+    currency_pair: CurrencyPairBinanceResponse = await _async_execute_binance_function(
         client.get_symbol_ticker, symbol
     )
     await client.close_connection()
     return currency_pair
 
 
-def get_symbol_ticker(symbol: str) -> CurrencyPairResponse:
+def get_symbol_ticker(symbol: str) -> CurrencyPairBinanceResponse:
     return _execute_binance_function(binance_client.get_symbol_ticker, symbol)
 
 
 def _execute_binance_function(
     func: Callable[[Any], Any], symbol: str
-) -> CurrencyPairResponse:
+) -> CurrencyPairBinanceResponse:
     try:
-        return deserialize(CurrencyPairResponse, func(symbol=symbol))
+        return deserialize(CurrencyPairBinanceResponse, func(symbol=symbol))
     except BinanceAPIException:
         logger.error("Invalid symbol %s in Binance Exchange", symbol)
         raise InvalidSymbol(
@@ -59,10 +59,10 @@ def _execute_binance_function(
 
 async def _async_execute_binance_function(
     func: Callable[[Any], Any], symbol: str, *, quantity: Optional[float] = None
-) -> CurrencyPairResponse:
+) -> CurrencyPairBinanceResponse:
     try:
-        currency_pair: CurrencyPairResponse = deserialize(
-            CurrencyPairResponse,
+        currency_pair: CurrencyPairBinanceResponse = deserialize(
+            CurrencyPairBinanceResponse,
             await func(symbol=symbol),
         )
         currency_pair.quantity = quantity

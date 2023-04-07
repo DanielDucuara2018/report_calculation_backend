@@ -9,6 +9,7 @@ class UserRequest(BaseModel):
     telegram_id: Optional[str] = None
     investment_euros: Optional[float] = None
     savings_euros: Optional[float] = None
+    description: Optional[str] = None
 
 
 class UserResponse(UserRequest):
