@@ -4,7 +4,7 @@ Report about my investments
 
 ## pre-commit
 
-```sh
+```bash
 pip install --user pre-commit
 pre-commit install
 pre-commit run --all-files
@@ -12,18 +12,26 @@ pre-commit run --all-files
 
 ## pytho venv
 
-```sh
+```bash
 python3.9 -m venv venv
 ```
 
 ## generate docker containers
 
-```sh
+```bash
 docker-compose up -d --build
 ```
 
 ## forwarding ports
 
-```sh
+Create a host name for report-calculation application:
+
+```bash
+169.254.6.2 report-calculation
+```
+
+Forward port in host machine:
+
+```bash
 ssh -L 127.0.0.1:3201:report-calculation:3201 username@ip_address
 ```

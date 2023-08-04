@@ -3,14 +3,15 @@ from setuptools import find_packages, setup
 VERSION = "0.1"
 
 INSTALL_REQUIRES = [
-    "python-binance==1.0.16",
+    "alembic==1.9.4",
     "apischema==0.15.6",
-    "python-telegram-bot==20.0a2",
-    "SQLAlchemy==1.4.37",
-    "psycopg2==2.9.1",
+    "asyncio==3.4.3",
     "configparser==5.3.0",
     "fastapi[all]==0.92.0",
-    "asyncio==3.4.3",
+    "psycopg2==2.9.1",
+    "python-binance==1.0.16",
+    "python-telegram-bot==20.0a2",
+    "SQLAlchemy==1.4.37",
 ]
 
 setup(
@@ -24,7 +25,7 @@ setup(
     include_package_data=True,
     entry_points={
         "console_scripts": [
-            "report-calculation = report_calulation.main:main",
+            "report-calculation = report_calculation.main:main",
             # "console = report_calulation.main:console",
         ]
     },
