@@ -32,7 +32,7 @@ class User(Base, Resource):
         },
     )
     telegram_id: Optional[str] = field(
-        metadata={"sa": Column(String, nullable=False)}
+        metadata={"sa": Column(String)}
     )  # TODO this value can be shared among users ?
     investment_euros: Optional[float] = field(
         default_factory=float, metadata={"sa": Column(Float, nullable=False)}

@@ -27,6 +27,7 @@ docker-compose up -d --build
 Create a host name for report-calculation application:
 
 ```bash
+sudo nano /etc/hosts
 169.254.6.2 report-calculation
 ```
 

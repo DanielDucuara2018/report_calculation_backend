@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Optional
 
-from sqlalchemy import Column, Float, String
+from sqlalchemy import Column, Float, ForeignKeyConstraint, String
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.schema import ForeignKey
 
@@ -38,10 +38,19 @@ class CurrencyPair(Base, Resource):
 
     # relationships
 
-    # association between Purchases -> Purchases
+    # association between CurrencyPair -> Purchases
     purchases: list["Purchase"] = field(
         default_factory=list,
         metadata={"sa": relationship("Purchase")},
+    )
+
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["user_id"],
+            ["user.user_id"],
+            onupdate="CASCADE",
+            ondelete="CASCADE",
+        ),
     )
 
     def __str__(self) -> str:
