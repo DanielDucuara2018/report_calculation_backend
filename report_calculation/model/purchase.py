@@ -52,6 +52,7 @@ class Purchase(Base, Resource):
         ForeignKeyConstraint(
             ["user_id", "symbol"],
             ["currency_pair.user_id", "currency_pair.symbol"],
+            name="purchase_user_id_fkey",
             onupdate="CASCADE",
             ondelete="CASCADE",
         ),
