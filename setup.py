@@ -6,6 +6,7 @@ INSTALL_REQUIRES = [
     "alembic==1.9.4",
     "apischema==0.15.6",
     "asyncio==3.4.3",
+    "bcrypt==4.1.2",
     "configparser==5.3.0",
     "fastapi[all]==0.92.0",
     "psycopg2==2.9.1",
