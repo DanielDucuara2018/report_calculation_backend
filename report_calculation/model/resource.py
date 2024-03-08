@@ -11,7 +11,7 @@ class Resource:
 
     __sa_dataclass_metadata_key__ = "sa"
 
-    description: Optional[str] = field(metadata={"sa": Column(String)})
+    description: Optional[str] = field(metadata={"sa": Column(String, nullable=True)})
 
     update_date: Optional[datetime] = field(
         init=False,
