@@ -7,6 +7,7 @@ from sqlalchemy import Column, Float, ForeignKeyConstraint, String
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.schema import ForeignKey
 
+from report_calculation.binance_client import get_symbol_ticker
 from report_calculation.model.base import Base, mapper_registry
 from report_calculation.model.purchase import Purchase
 from report_calculation.model.resource import Resource
@@ -48,10 +49,15 @@ class CurrencyPair(Base, Resource):
         ForeignKeyConstraint(
             ["user_id"],
             ["user.user_id"],
+            name="currency_pair_user_id_fkey",
             onupdate="CASCADE",
             ondelete="CASCADE",
         ),
     )
+
+    @property
+    def price(self):
+        return get_symbol_ticker(self.symbol).price
 
     def __str__(self) -> str:
         return f"Pair {self.symbol} with {self.quantity} tokens"
