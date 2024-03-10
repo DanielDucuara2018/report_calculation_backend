@@ -39,7 +39,7 @@ def read(
         result = ModelUser.get(user_id=user_id)
     else:
         logger.info("Reading all data")
-        result = ModelUser.get()
+        result = ModelUser.find()
     logger.info("Result %s", result)
     return result
 
