@@ -1,3 +1,4 @@
+from dataclasses import asdict
 from typing import Optional, Union
 
 from fastapi import APIRouter
@@ -28,8 +29,15 @@ async def read_currency(
     user_id: str, symbol: Optional[str] = None
 ) -> Union[list[CurrencyPairResponse], CurrencyPairResponse]:
     if symbol:
-        return read(user_id, symbol)
-    return read(user_id)
+        currency = read(user_id, symbol)
+        return CurrencyPairResponse(
+            price=currency.price, **asdict(read(user_id, symbol))
+        )
+    currencies = read(user_id)
+    return [
+        CurrencyPairResponse(price=currency.price, **asdict(currency))
+        for currency in currencies
+    ]
 
 
 # update crypto data
