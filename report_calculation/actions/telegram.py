@@ -22,7 +22,21 @@ def create(
     return result
 
 
-# # delete Telegram info
+# run Telegram bot
+
+
+def run(user_id: str, telegram_id: str) -> bool:
+    return ModelTelegram.get(user_id=user_id, telegram_id=telegram_id).run()
+
+
+# stop Telegram bot
+
+
+def stop(user_id: str, telegram_id: str) -> bool:
+    return ModelTelegram.get(user_id=user_id, telegram_id=telegram_id).stop()
+
+
+# delete Telegram info
 
 
 def delete(user_id: str, telegram_id: str) -> ModelTelegram:

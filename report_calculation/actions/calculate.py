@@ -7,7 +7,7 @@ from report_calculation.binance_client import (
     async_get_symbol_ticker,
     async_get_symbol_tickers,
 )
-from report_calculation.errors import NotUserFound
+from report_calculation.errors import NoUserFound
 from report_calculation.model import CurrencyPair as ModelCurrencyPair
 from report_calculation.model import User as ModelUser
 
@@ -23,7 +23,7 @@ async def total_crypto_usd(user: Optional[ModelUser] = None) -> float:
     logger.info("Calculating total crypto money in usd")
 
     if not user:
-        raise NotUserFound(message="Not user found")
+        raise NoUserFound(value=user)
 
     currency_pairs = await async_get_symbol_tickers(
         ModelCurrencyPair.find(user_id=user.user_id)
@@ -108,7 +108,7 @@ async def invested_usd(user: Optional[ModelUser] = None) -> float:
     logger.info("Calculating total investment in usd")
 
     if not user:
-        raise NotUserFound(message="Not user found")
+        raise NoUserFound(value=user)
 
     currency_pair = await async_get_symbol_ticker(EUR_USDT)
 
@@ -123,7 +123,7 @@ async def invested_euros(user: Optional[ModelUser] = None) -> float:
     logger.info("Calculating total investment in euros")
 
     if not user:
-        raise NotUserFound(message="Not user found")
+        raise NoUserFound(value=user)
 
     investment = float("{:.2f}".format(user.investment_euros))
     logger.info("Investment: %f euros", investment)

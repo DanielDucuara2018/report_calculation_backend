@@ -23,17 +23,29 @@ class InvalidSymbol(Error):
 
     code = 1000
     reason = "invalid-symbol"
-    description = "Invalid symbol in exchange"
+    description = "Invalid symbol in exchange."
 
 
-class NotDataFound(Error):
+class NoDataFound(Error):
 
     code = 1001
-    reason = "not-data-found"
-    description = "Not data found in DB"
+    reason = "no-data-found"
+    description = "No data found in DB."
 
 
-class NotUserFound(Error):
+class NoUserFound(Error):
     code = 1002
-    reason = "not-user-found"
-    description = "Not user found in DB"
+    reason = "no-user-found"
+    description = "No user found in DB."
+
+
+class NoTeletramBotProcess(Error):
+    code = 1003
+    reason = "not-telegram-bot-running"
+    description = "There is not telegram bot running."
+
+
+class TeletramBotAlreadyRunning(Error):
+    code = 1004
+    reason = "telegram-bot-alredy-running"
+    description = "There is already a telegram bot running"

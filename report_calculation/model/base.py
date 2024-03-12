@@ -3,7 +3,7 @@ from typing import Type, TypeVar
 from sqlalchemy.orm import registry
 
 from report_calculation import db
-from report_calculation.errors import NotDataFound
+from report_calculation.errors import NoDataFound
 
 T = TypeVar("T", bound="Base")
 mapper_registry = registry()
@@ -33,12 +33,12 @@ class Base:
     def get(cls: Type[T], **kwargs) -> T:
         query = db.session.query(cls)
         if not (result := query.get(kwargs)):
-            raise NotDataFound(key=kwargs, messages="Not data found in DB")
+            raise NoDataFound(key=kwargs, messages="Not data found in DB")
         return result
 
-    def update(self: T, **kwargs) -> T:
+    def update(self: T, force_update: bool = False, **kwargs) -> T:
         for key, value in kwargs.items():
-            if value is not None:
+            if force_update or value is not None:
                 setattr(self, key, value)
         db.session.commit()
         return self

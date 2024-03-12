@@ -26,7 +26,7 @@ setup(
     include_package_data=True,
     entry_points={
         "console_scripts": [
-            "report-calculation = report_calculation.main:main",
+            "telegram-bot = report_calculation.telegram.bot:telegram_bot",
             # "console = report_calulation.main:console",
         ]
     },

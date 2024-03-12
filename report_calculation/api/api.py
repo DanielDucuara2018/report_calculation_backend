@@ -1,10 +1,25 @@
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
 from report_calculation.api.routers.calculate import router as calculate_router
 from report_calculation.api.routers.currency import router as currency_router
 from report_calculation.api.routers.exchange import router as exchange_router
 from report_calculation.api.routers.purchase import router as purchase_router
 from report_calculation.api.routers.telegram import router as telegram_router
 from report_calculation.api.routers.user import router as user_router
-from report_calculation.config import app
+from report_calculation.db import initialize
+
+initialize(True)
+
+app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(user_router)
 app.include_router(currency_router)
