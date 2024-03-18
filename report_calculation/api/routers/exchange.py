@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
 from report_calculation.actions.exchange import (
     ExchangeName,
@@ -7,7 +7,8 @@ from report_calculation.actions.exchange import (
     read,
     update,
 )
-from report_calculation.schema import ExchangeRequest, ExchangeResponse
+from report_calculation.actions.user import get_current_user
+from report_calculation.schema import ExchangeRequest, ExchangeResponse, UserResponse
 
 router = APIRouter(
     prefix="/exchange",
@@ -19,33 +20,41 @@ router = APIRouter(
 # add new exchange info in database
 @router.post("/")
 async def add_exchange_info(
-    user_id: str, exchange_name: ExchangeName, exchange_info: ExchangeRequest
+    exchange_name: ExchangeName,
+    exchange_info: ExchangeRequest,
+    current_user: UserResponse = Depends(get_current_user),
 ) -> ExchangeResponse:
-    return create(user_id, exchange_name, exchange_info)
+    return create(current_user.user_id, exchange_name, exchange_info)
 
 
 # get exchange data
 @router.get("/{exchange_name}")
-async def read_user(user_id: str, exchange_name: ExchangeName) -> ExchangeResponse:
-    return read(user_id, exchange_name)
+async def read_exchange(
+    exchange_name: ExchangeName, current_user: UserResponse = Depends(get_current_user)
+) -> ExchangeResponse:
+    return read(current_user.user_id, exchange_name)
 
 
 @router.get("/")
-async def read_user(user_id: str) -> list[ExchangeResponse]:
-    return read(user_id)
+async def read_exchanges(
+    current_user: UserResponse = Depends(get_current_user),
+) -> list[ExchangeResponse]:
+    return read(current_user.user_id)
 
 
 # update exchange info
 @router.put("/")
 async def update_exchange_info(
-    user_id: str, exchange_name: ExchangeName, exchange_info: ExchangeRequest
+    exchange_name: ExchangeName,
+    exchange_info: ExchangeRequest,
+    current_user: UserResponse = Depends(get_current_user),
 ) -> ExchangeResponse:
-    return update(user_id, exchange_name, exchange_info)
+    return update(current_user.user_id, exchange_name, exchange_info)
 
 
 # delete existing from db
 @router.delete("/")
 async def delete_currency(
-    user_id: str, exchange_name: ExchangeName
+    exchange_name: ExchangeName, current_user: UserResponse = Depends(get_current_user)
 ) -> ExchangeResponse:
-    return delete(user_id, exchange_name)
+    return delete(current_user.user_id, exchange_name)

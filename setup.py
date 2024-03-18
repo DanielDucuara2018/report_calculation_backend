@@ -11,6 +11,7 @@ INSTALL_REQUIRES = [
     "fastapi[all]==0.92.0",
     "psycopg2==2.9.1",
     "python-binance==1.0.16",
+    "python-jose[cryptography]==3.3.0",
     "python-telegram-bot==20.0a2",
     "SQLAlchemy==1.4.37",
 ]

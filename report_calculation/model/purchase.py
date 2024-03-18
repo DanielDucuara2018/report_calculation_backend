@@ -30,7 +30,9 @@ class Purchase(Base, Resource):
         },
     )
 
-    user_id: str = field(metadata={"sa": Column(String, ForeignKey("user.user_id"))})
+    user_id: str = field(
+        metadata={"sa": Column(String, ForeignKey("user.user_id"), primary_key=True)}
+    )
 
     symbol: str = field(metadata={"sa": Column(String)})
 

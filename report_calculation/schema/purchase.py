@@ -6,7 +6,6 @@ from pydantic import BaseModel
 
 class PurchaseRequest(BaseModel):
 
-    user_id: Optional[str] = None
     symbol: Optional[str] = None
     quantity: Optional[float] = None
     price: Optional[float] = None
@@ -16,6 +15,7 @@ class PurchaseRequest(BaseModel):
 
 class PurchaseResponse(PurchaseRequest):
 
+    user_id: Optional[str] = None
     purchase_id: Optional[str] = None
     gain: Optional[float] = None
     update_date: Optional[datetime] = None

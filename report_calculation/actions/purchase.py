@@ -11,9 +11,9 @@ logger = logging.getLogger(__name__)
 # add purchase
 
 
-def create(purchase: PurchaseRequest) -> Purchase:
+def create(user_id: str, purchase: PurchaseRequest) -> Purchase:
     logger.info("Adding purchase")
-    result = Purchase(**dict(purchase)).create()
+    result = Purchase(user_id=user_id, **dict(purchase)).create()
     logger.info("Added %s", result)
     return result()
 
@@ -38,11 +38,12 @@ def read(
 
 
 def update(
+    user_id: str,
     purchase_id: str,
     purchase: PurchaseRequest,
 ) -> Purchase:
     logger.info("Updating purchase data of %s", purchase_id)
-    result = Purchase.get(purchase_id=purchase_id).update(**dict(purchase))  # type: ignore
+    result = Purchase.get(user_id=user_id, purchase_id=purchase_id).update(**dict(purchase))  # type: ignore
     logger.info("Result %s", result)
     return result()
 
@@ -50,8 +51,8 @@ def update(
 # delete purchase
 
 
-def delete(purchase_id: str) -> Purchase:
+def delete(user_id: str, purchase_id: str) -> Purchase:
     logger.info("Deleting purchase %s", purchase_id)
-    result = Purchase.get(purchase_id=purchase_id).delete()  # type: ignore
+    result = Purchase.get(user_id=user_id, purchase_id=purchase_id).delete()  # type: ignore
     logger.info("Deleted %s", result)
     return result()

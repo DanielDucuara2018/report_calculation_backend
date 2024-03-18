@@ -1,9 +1,10 @@
 from typing import Optional
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
 from report_calculation.actions.purchase import create, delete, read, update
-from report_calculation.schema import PurchaseRequest, PurchaseResponse
+from report_calculation.actions.user import get_current_user
+from report_calculation.schema import PurchaseRequest, PurchaseResponse, UserResponse
 
 router = APIRouter(
     prefix="/purchases",
@@ -14,19 +15,22 @@ router = APIRouter(
 ## Purchases
 # add new purchase in database
 @router.post("/")
-async def create_purchase(purchase: PurchaseRequest) -> PurchaseResponse:
-    return create(purchase)
+async def add_purchase(
+    purchase_info: PurchaseRequest,
+    current_user: UserResponse = Depends(get_current_user),
+) -> PurchaseResponse:
+    return create(current_user.user_id, purchase_info)
 
 
 # get purchase data
 @router.get("/")
 async def read_purchase(
-    user_id: str,
     purchase_id: Optional[str] = None,
+    current_user: UserResponse = Depends(get_current_user),
 ) -> list[PurchaseResponse]:
     if purchase_id:
-        return read(user_id, purchase_id)
-    return read(user_id)
+        return read(current_user.user_id, purchase_id)
+    return read(current_user.user_id)
 
 
 # update purchase data
@@ -34,11 +38,14 @@ async def read_purchase(
 async def update_purchase(
     purchase_id: str,
     purchase: PurchaseRequest,
+    current_user: UserResponse = Depends(get_current_user),
 ) -> PurchaseResponse:
-    return update(purchase_id, purchase)
+    return update(current_user.user_id, purchase_id, purchase)
 
 
 # delete purchase from db
 @router.delete("/")
-async def delete_purchase(purchase_id: str) -> PurchaseResponse:
-    return delete(purchase_id)
+async def delete_purchase(
+    purchase_id: str, current_user: UserResponse = Depends(get_current_user)
+) -> PurchaseResponse:
+    return delete(current_user.user_id, purchase_id)

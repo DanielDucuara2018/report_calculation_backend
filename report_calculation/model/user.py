@@ -34,7 +34,7 @@ class User(Base, Resource):
         },
     )
 
-    user_name: str = field(metadata={"sa": Column(String, nullable=False)})
+    username: str = field(metadata={"sa": Column("user_name", String, nullable=False)})
 
     _password: bytes = field(
         metadata={"sa": Column("password", LargeBinary, nullable=False)}

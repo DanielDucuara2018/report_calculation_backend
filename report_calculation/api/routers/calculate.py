@@ -1,6 +1,6 @@
 from enum import Enum
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
 from report_calculation.actions.calculate import (
     invested_euros,
@@ -12,7 +12,9 @@ from report_calculation.actions.calculate import (
     total_euros,
     total_usd,
 )
+from report_calculation.actions.user import get_current_user
 from report_calculation.model import User as ModelUser
+from report_calculation.schema import UserResponse
 
 router = APIRouter(
     prefix="/calculate",
@@ -48,6 +50,8 @@ calculate_action = {
 
 
 @router.get("/{action}")
-async def calculate_total_usd(action: CalculateActions, user_id: str) -> float:
-    user: ModelUser = ModelUser.get(user_id=user_id)
+async def calculate_total_usd(
+    action: CalculateActions, current_user: UserResponse = Depends(get_current_user)
+) -> float:
+    user: ModelUser = ModelUser.get(user_id=current_user.user_id)
     return await calculate_action.get(action)(user)

@@ -12,5 +12,5 @@ def generate_password_hash(password: str) -> bytes:
     return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
 
 
-def check_password_hash(hashed_password: bytes, input_password: str):
+def check_password_hash(hashed_password: bytes, input_password: str) -> bool:
     return bcrypt.checkpw(input_password.encode("utf-8"), hashed_password)

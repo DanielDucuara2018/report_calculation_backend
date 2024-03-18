@@ -1,10 +1,15 @@
 from dataclasses import asdict
 from typing import Optional, Union
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
 from report_calculation.actions.currency import create, delete, read, update
-from report_calculation.schema import CurrencyPairRequest, CurrencyPairResponse
+from report_calculation.actions.user import get_current_user
+from report_calculation.schema import (
+    CurrencyPairRequest,
+    CurrencyPairResponse,
+    UserResponse,
+)
 
 router = APIRouter(
     prefix="/currencies",
@@ -18,16 +23,19 @@ router = APIRouter(
 # add new crypto in database
 @router.post("/")
 async def create_currency(
-    user_id: str, symbol: str, data: CurrencyPairRequest
+    symbol: str,
+    data: CurrencyPairRequest,
+    current_user: UserResponse = Depends(get_current_user),
 ) -> CurrencyPairResponse:
-    return create(user_id, symbol, data.quantity, data.description)
+    return create(current_user.user_id, symbol, data.quantity, data.description)
 
 
 # get crypto data
 @router.get("/")
 async def read_currency(
-    user_id: str, symbol: Optional[str] = None
+    symbol: Optional[str] = None, current_user: UserResponse = Depends(get_current_user)
 ) -> Union[list[CurrencyPairResponse], CurrencyPairResponse]:
+    user_id = current_user.user_id
     if symbol:
         currency = read(user_id, symbol)
         return CurrencyPairResponse(
@@ -43,12 +51,16 @@ async def read_currency(
 # update crypto data
 @router.put("/")
 async def update_currency(
-    user_id: str, symbol: str, data: CurrencyPairRequest
+    symbol: str,
+    data: CurrencyPairRequest,
+    current_user: UserResponse = Depends(get_current_user),
 ) -> CurrencyPairResponse:
-    return update(user_id, symbol, data.quantity, data.description)
+    return update(current_user.user_id, symbol, data.quantity, data.description)
 
 
 # delete existing from db
 @router.delete("/")
-async def delete_currency(user_id: str, symbol: str) -> CurrencyPairResponse:
-    return delete(user_id, symbol)
+async def delete_currency(
+    symbol: str, current_user: UserResponse = Depends(get_current_user)
+) -> CurrencyPairResponse:
+    return delete(current_user.user_id, symbol)
