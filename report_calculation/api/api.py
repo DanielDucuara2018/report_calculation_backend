@@ -1,3 +1,5 @@
+import logging
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -8,6 +10,12 @@ from report_calculation.api.routers.purchase import router as purchase_router
 from report_calculation.api.routers.telegram import router as telegram_router
 from report_calculation.api.routers.user import router as user_router
 from report_calculation.db import initialize
+
+logging.basicConfig(
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
+)
+
+logger = logging.getLogger(__name__)
 
 initialize(True)
 

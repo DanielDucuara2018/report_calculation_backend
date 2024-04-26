@@ -14,6 +14,10 @@ from report_calculation.errors import NoTeletramBotProcess, TeletramBotAlreadyRu
 from report_calculation.model.base import Base, mapper_registry
 from report_calculation.model.resource import Resource
 
+logging.basicConfig(
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
+)
+
 logger = logging.getLogger(__name__)
 
 
@@ -70,6 +74,8 @@ class Telegram(Base, Resource):
                 self.telegram_id,
                 "--telegram-token",
                 self.token,
+                "--user-id",
+                self.user_id,
             ]
         ).pid
         logger.info("Telegram bot running on PID %s", pid)
@@ -91,6 +97,19 @@ class Telegram(Base, Resource):
             self.pid,
             self.user_id,
         )
-        os.kill(self.pid, signal.SIGTERM)
+        try:
+            os.kill(self.pid, signal.SIGTERM)
+        except ProcessLookupError as e:
+            logging.warning("Telemgram bot could no be killed. Reason %s", e)
         self.update(force_update=True, pid=None)
         return True
+
+    def respawn(self) -> bool:
+        logger.info(
+            "Respawing telegram bot wiht telegram id %s for user %s",
+            self.telegram_id,
+            self.user_id,
+        )
+        if self.stop():
+            return self.run()
+        return False

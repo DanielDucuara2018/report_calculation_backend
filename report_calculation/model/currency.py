@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Optional
+from typing import Any, Optional
 
 from sqlalchemy import Column, Float, ForeignKeyConstraint, String
 from sqlalchemy.orm import relationship
@@ -55,9 +55,10 @@ class CurrencyPair(Base, Resource):
         ),
     )
 
-    @property
-    def price(self):
-        return get_symbol_ticker(self.symbol).price
+    def price(self, client: Optional[Any] = None) -> float:  # TODO find client typing
+        if not client:
+            raise Exception  # TODO no exchange defined, add a first exchange info
+        return get_symbol_ticker(client, self.symbol).price
 
     def __str__(self) -> str:
         return f"Pair {self.symbol} with {self.quantity} tokens"

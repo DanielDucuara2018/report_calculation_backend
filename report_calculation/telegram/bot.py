@@ -26,18 +26,14 @@ from report_calculation.actions.calculate import (
 from report_calculation.actions.currency import create, delete, read, update
 from report_calculation.db import initialize
 from report_calculation.errors import NoUserFound
+from report_calculation.model import Telegram as ModelTelegram
 from report_calculation.model import User as ModelUser
 
 logger = logging.getLogger(__name__)
 
-
-def _get_user(
-    bot_info: User,
-) -> Optional[ModelUser]:  # TODO add <class 'telegram._user.User'> typing
-    users = ModelUser.find(telegram_id=str(bot_info.id))
-    if users:
-        return users[-1]
-    return None
+FILTER_DEFS = {
+    "telegram_id": ModelTelegram.telegram_id,
+}
 
 
 @dataclass
@@ -45,6 +41,7 @@ class TelegramBot:
 
     telegram_id: str
     telegram_bot_token: str
+    user_id: str
     telegram_app: Optional[Application] = None
 
     def __post_init__(self):
@@ -87,6 +84,10 @@ class TelegramBot:
         self.telegram_app.add_handler(CommandHandler("bot", self.bot_info))
         self.telegram_app.add_error_handler(self.error_handler)
         self.telegram_app.run_polling()
+
+    @property
+    def user(self) -> ModelUser:
+        return ModelUser.get(user_id=self.user_id)
 
     def init_telegram_bot_application(self, telegram_bot_token: str) -> Application:
         logger.info("Initialising Telegram bot connection")
@@ -157,7 +158,7 @@ class TelegramBot:
             "Calculating total crypto money in usd"
         )
         await update_handler.callback_query.message.reply_text(
-            f"Total crypto money: {await total_crypto_usd(_get_user(await context.bot.get_me()))} usd"
+            f"Total crypto money: {await total_crypto_usd(self.user)} usd"
         )
 
     async def get_total_crypto_euros(
@@ -168,7 +169,7 @@ class TelegramBot:
             "Calculating total crypto money in euros"
         )
         await update_handler.callback_query.message.reply_text(
-            f"Total crypto money: {await total_crypto_euros(_get_user(await context.bot.get_me()))} euros"
+            f"Total crypto money: {await total_crypto_euros(self.user)} euros"
         )
 
     # Total money (total money on cryptos + bank savings)
@@ -181,7 +182,7 @@ class TelegramBot:
             "Calculating total money in usd (total crypto money + bank savings)"
         )
         await update_handler.callback_query.message.reply_text(
-            f"Total money: {await total_usd(_get_user(await context.bot.get_me()))} usd"
+            f"Total money: {await total_usd(self.user)} usd"
         )
 
     async def get_total_euros(
@@ -192,7 +193,7 @@ class TelegramBot:
             "Calculating total money in euros (total crypto money + bank savings)"
         )
         await update_handler.callback_query.message.reply_text(
-            f"Total money: {await total_euros(_get_user(await context.bot.get_me()))} euros"
+            f"Total money: {await total_euros(self.user)} euros"
         )
 
     # Total profit (total money on cryptos - investment)
@@ -205,7 +206,7 @@ class TelegramBot:
             "Calculating total profit in usd (total crypto money - investment)"
         )
         await update_handler.callback_query.message.reply_text(
-            f"Total profit: {await profit_usd(_get_user(await context.bot.get_me()))} usd"
+            f"Total profit: {await profit_usd(self.user)} usd"
         )
 
     async def get_profit_euros(
@@ -216,7 +217,7 @@ class TelegramBot:
             "Calculating total profit in euros (total crypto money - investment)"
         )
         await update_handler.callback_query.message.reply_text(
-            f"Total profit: {await profit_euros(_get_user(await context.bot.get_me()))} euros"
+            f"Total profit: {await profit_euros(self.user)} euros"
         )
 
     # Total invested money
@@ -229,7 +230,7 @@ class TelegramBot:
             "Total invested money in usd"
         )
         await update_handler.callback_query.message.reply_text(
-            f"Total money: {await invested_usd(_get_user(await context.bot.get_me()))} usd"
+            f"Total money: {await invested_usd(self.user)} usd"
         )
 
     async def get_investment_euros(
@@ -240,7 +241,7 @@ class TelegramBot:
             "Total invested money in euros"
         )
         await update_handler.callback_query.message.reply_text(
-            f"Total money: {await invested_euros(_get_user(await context.bot.get_me()))} euros"
+            f"Total money: {await invested_euros(self.user)} euros"
         )
 
     ## CRUD handlers
@@ -251,7 +252,7 @@ class TelegramBot:
     ) -> None:
         logger.info(f"Running create_currency")
 
-        user: ModelUser = _get_user(await context.bot.get_me())
+        user: ModelUser = self.user
         if not user:
             raise NoUserFound(message="Not user found")
 
@@ -274,7 +275,7 @@ class TelegramBot:
     ) -> None:
         logger.info(f"Running read_currency")
 
-        user: ModelUser = _get_user(await context.bot.get_me())
+        user: ModelUser = self.user
         if not user:
             raise NoUserFound(message="Not user found")
 
@@ -299,7 +300,7 @@ class TelegramBot:
     ) -> None:
         logger.info(f"Running update_currency")
 
-        user: ModelUser = _get_user(await context.bot.get_me())
+        user: ModelUser = self.user
         if not user:
             raise NoUserFound(message="Not user found")
 
@@ -322,7 +323,7 @@ class TelegramBot:
     ) -> None:
         logger.info(f"Running delete_currency")
 
-        user: ModelUser = _get_user(await context.bot.get_me())
+        user: ModelUser = self.user
         if not user:
             raise NoUserFound(message="Not user found")
 
@@ -365,8 +366,9 @@ class TelegramBot:
 @click.command()
 @click.option("--telegram-id", required=True, type=str)
 @click.option("--telegram-token", required=True, type=str)
-def telegram_bot(telegram_id: str, telegram_token: str):
+@click.option("--user-id", required=True, type=str)
+def telegram_bot(telegram_id: str, telegram_token: str, user_id: str):
     logger.info("Initialising App")
     initialize(True)
-    bot = TelegramBot(telegram_id, telegram_token)
+    bot = TelegramBot(telegram_id, telegram_token, user_id)
     bot.run()

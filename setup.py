@@ -9,6 +9,7 @@ INSTALL_REQUIRES = [
     "bcrypt==4.1.2",
     "configparser==5.3.0",
     "fastapi[all]==0.92.0",
+    "fastapi-utils==0.2.1",
     "psycopg2==2.9.1",
     "python-binance==1.0.16",
     "python-jose[cryptography]==3.3.0",

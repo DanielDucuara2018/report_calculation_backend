@@ -8,7 +8,6 @@ from apischema import deserialize
 from binance import AsyncClient
 from binance.exceptions import BinanceAPIException
 
-from report_calculation.config import binance_client, init_binance_connection_async
 from report_calculation.errors import InvalidSymbol
 from report_calculation.schema import CurrencyPairBinanceResponse
 
@@ -18,8 +17,8 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-async def async_get_symbol_tickers(currencies: list[CurrencyPair]):
-    client: AsyncClient = await init_binance_connection_async()
+async def async_get_symbol_tickers(client: AsyncClient, currencies: list[CurrencyPair]):
+    client: AsyncClient = await client
     currency_pairs: list[CurrencyPairBinanceResponse] = await asyncio.gather(
         *(
             _async_execute_binance_function(
@@ -32,8 +31,8 @@ async def async_get_symbol_tickers(currencies: list[CurrencyPair]):
     return currency_pairs
 
 
-async def async_get_symbol_ticker(symbol: str):
-    client: AsyncClient = await init_binance_connection_async()
+async def async_get_symbol_ticker(client: AsyncClient, symbol: str):
+    client: AsyncClient = await client
     currency_pair: CurrencyPairBinanceResponse = await _async_execute_binance_function(
         client.get_symbol_ticker, symbol
     )
@@ -41,20 +40,18 @@ async def async_get_symbol_ticker(symbol: str):
     return currency_pair
 
 
-def get_symbol_ticker(symbol: str) -> CurrencyPairBinanceResponse:
-    return _execute_binance_function(binance_client.get_symbol_ticker, symbol)
+def get_symbol_ticker(client, symbol: str) -> CurrencyPairBinanceResponse:
+    return _sync_execute_binance_function(client.get_symbol_ticker, symbol)
 
 
-def _execute_binance_function(
+def _sync_execute_binance_function(
     func: Callable[[Any], Any], symbol: str
 ) -> CurrencyPairBinanceResponse:
     try:
         return deserialize(CurrencyPairBinanceResponse, func(symbol=symbol))
     except BinanceAPIException:
         logger.error("Invalid symbol %s in Binance Exchange", symbol)
-        raise InvalidSymbol(
-            symbol=symbol, messages=f"Invalid symbol {symbol} in Binance Exchange"
-        )
+        raise InvalidSymbol(symbol=symbol)
 
 
 async def _async_execute_binance_function(
@@ -69,6 +66,4 @@ async def _async_execute_binance_function(
         return currency_pair
     except BinanceAPIException:
         logger.error("Invalid symbol %s in Binance Exchange", symbol)
-        raise InvalidSymbol(
-            symbol=symbol, messages=f"Invalid symbol {symbol} in Binance Exchange"
-        )
+        raise InvalidSymbol(symbol=symbol)

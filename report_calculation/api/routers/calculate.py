@@ -1,6 +1,8 @@
+import logging
 from enum import Enum
 
 from fastapi import APIRouter, Depends
+from fastapi_utils.tasks import repeat_every
 
 from report_calculation.actions.calculate import (
     invested_euros,
@@ -12,9 +14,11 @@ from report_calculation.actions.calculate import (
     total_euros,
     total_usd,
 )
-from report_calculation.actions.user import get_current_user
+from report_calculation.actions.user import get_current_user, read
 from report_calculation.model import User as ModelUser
 from report_calculation.schema import UserResponse
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(
     prefix="/calculate",
@@ -55,3 +59,14 @@ async def calculate_total_usd(
 ) -> float:
     user: ModelUser = ModelUser.get(user_id=current_user.user_id)
     return await calculate_action.get(action)(user)
+
+
+@router.on_event("startup")
+@repeat_every(seconds=60 * 60 * 24)  # 1 minute
+async def get_daily_crypto_euros() -> None:
+    # TODO check if already exist a value in DB for TODAY. If not, add it
+    # TODO create a new table containing the 4 values in euros (id, user_id, values, creation_date)
+    logger.info("Getting daily crypto portafolio")
+    for user in read():
+        value = await total_crypto_euros(user)
+        logger.info("Current value %s", value)

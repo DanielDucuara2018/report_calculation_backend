@@ -1,9 +1,12 @@
-from typing import Type, TypeVar
+from typing import Any, Optional, Type, TypeVar
 
+from sqlalchemy import ARRAY
 from sqlalchemy.orm import registry
+from sqlalchemy.orm.decl_api import DeclarativeMeta
 
 from report_calculation import db
 from report_calculation.errors import NoDataFound
+from report_calculation.utils import to_list
 
 T = TypeVar("T", bound="Base")
 mapper_registry = registry()
@@ -11,8 +14,17 @@ mapper_registry = registry()
 
 class Base:
     @classmethod
-    def find(cls: Type[T], **filters) -> list[T]:
+    def find(
+        cls: Type[T],
+        filter_defs: Optional[dict[str, Any]] = None,
+        joins: Optional[list[DeclarativeMeta]] = None,
+        **filters,
+    ) -> list[T]:
         query = db.session.query(cls)
+
+        if joins:
+            for jn in joins:
+                query = query.outerjoin(jn)
 
         for_equality = True
         for key, value in filters.items():
@@ -20,12 +32,23 @@ class Base:
                 key = key[1:]
                 for_equality = False
 
-            column = getattr(cls, key)
+            if filter_defs and key in filter_defs:
+                column = filter_defs[key]
+            else:
+                column = getattr(cls, key)
+
+            if not isinstance(value, list):
+                value = to_list(value)
+
+            if isinstance(column.type, ARRAY):
+                filter = column.overlap(value)
+            else:
+                filter = column.in_(value)
 
             if for_equality:
-                query = query.filter(column == value)
+                query = query.filter(filter)
             else:
-                query = query.filter(column != value)
+                query = query.filter(~filter)
 
         return query.all()
 

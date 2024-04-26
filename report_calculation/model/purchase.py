@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass, field
+from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Optional
 
@@ -60,11 +60,7 @@ class Purchase(Base, Resource):
         ),
     )
 
-    @property
-    def gain(self) -> float:
+    def gain(self, connection) -> float:  # TODO Add typing for arg connection
         return self.quantity * (
-            float(get_symbol_ticker(self.symbol).price) - self.price
+            float(get_symbol_ticker(connection, self.symbol).price) - self.price
         )
-
-    def __call__(self):
-        return {**asdict(self), **{"gain": self.gain}}

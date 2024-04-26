@@ -1,9 +1,18 @@
 from enum import Enum
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, status
 
-from report_calculation.actions.telegram import create, delete, read, run, stop, update
+from report_calculation.actions.telegram import (
+    create,
+    delete,
+    read,
+    respawn,
+    run,
+    stop,
+    update,
+)
 from report_calculation.actions.user import get_current_user
+from report_calculation.errors import Error
 from report_calculation.schema import TelegramRequest, TelegramResponse, UserResponse
 
 router = APIRouter(
@@ -16,11 +25,13 @@ router = APIRouter(
 class TelegramBotActions(str, Enum):
     RUN = "run"
     STOP = "stop"
+    RESPAWN = "respawn"
 
 
 telegram_bot_actions = {
     TelegramBotActions.RUN: run,
     TelegramBotActions.STOP: stop,
+    TelegramBotActions.RESPAWN: respawn,
 }
 
 ## Telegram
@@ -41,7 +52,13 @@ async def run_telegram_bot(
     action: TelegramBotActions,
     current_user: UserResponse = Depends(get_current_user),
 ) -> bool:
-    return telegram_bot_actions.get(action)(current_user.user_id, telegram_id)
+    try:
+        return telegram_bot_actions.get(action)(current_user.user_id, telegram_id)
+    except Error as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=e.reason,
+        )
 
 
 # get telegram info

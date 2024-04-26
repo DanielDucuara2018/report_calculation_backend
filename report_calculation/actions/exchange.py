@@ -19,7 +19,7 @@ def create(
     result = ModelExchange(
         user_id=user_id, exchange_name=exchange_name, **dict(exchange_info)
     ).create()
-    logger.info("Added %s", result)
+    logger.info("Added exchange %s for user %s", exchange_name, user_id)
     return result
 
 
@@ -29,7 +29,7 @@ def create(
 def delete(user_id: str, exchange_name: ExchangeName) -> ModelExchange:
     logger.info("Deleting exchange %s for user %s", exchange_name, user_id)
     result = ModelExchange.get(user_id=user_id).delete()
-    logger.info("Deleted %s", result)
+    logger.info("Deleted exchange %s for user %s", exchange_name, user_id)
     return result
 
 
@@ -46,7 +46,7 @@ def read(
     else:
         logger.info("Reading exchange data of user %s", user_id)
         result = ModelExchange.find(user_id=user_id)
-    logger.info("Result %s", result)
+    logger.info("Data found for exchange %s for user %s", exchange_name, user_id)
     return result
 
 
@@ -65,5 +65,5 @@ def update(
     result = ModelExchange.get(user_id=user_id, exchange_name=exchange_name).update(
         **dict(exchange_info)
     )
-    logger.info("Result %s", result)
+    logger.info("Updated exchange %s of user %s", exchange_name, user_id)
     return result

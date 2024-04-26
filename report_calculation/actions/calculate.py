@@ -1,13 +1,11 @@
 from __future__ import annotations
 
 import logging
-from typing import Optional
 
 from report_calculation.binance_client import (
     async_get_symbol_ticker,
     async_get_symbol_tickers,
 )
-from report_calculation.errors import NoUserFound
 from report_calculation.model import CurrencyPair as ModelCurrencyPair
 from report_calculation.model import User as ModelUser
 
@@ -19,14 +17,12 @@ EUR_USDT = "EURUSDT"
 # Total money on cryptos
 
 
-async def total_crypto_usd(user: Optional[ModelUser] = None) -> float:
+async def total_crypto_usd(user: ModelUser) -> float:
     logger.info("Calculating total crypto money in usd")
 
-    if not user:
-        raise NoUserFound(value=user)
-
     currency_pairs = await async_get_symbol_tickers(
-        ModelCurrencyPair.find(user_id=user.user_id)
+        user.active_exchange.async_connection,
+        ModelCurrencyPair.find(user_id=user.user_id),
     )
 
     total_usd = sum(
@@ -40,11 +36,13 @@ async def total_crypto_usd(user: Optional[ModelUser] = None) -> float:
     return total
 
 
-async def total_crypto_euros(user: Optional[ModelUser] = None) -> float:
+async def total_crypto_euros(user: ModelUser) -> float:
     logger.info("Calculating total crypto money in euros")
 
     total = await total_crypto_usd(user)
-    currency_pair = await async_get_symbol_ticker(EUR_USDT)
+    currency_pair = await async_get_symbol_ticker(
+        user.active_exchange.async_connection, EUR_USDT
+    )
 
     total_euros = float("{:.2f}".format(total / float(currency_pair.price)))
     logger.info("Total crypto money: %f euros", total_euros)
@@ -54,11 +52,13 @@ async def total_crypto_euros(user: Optional[ModelUser] = None) -> float:
 # Total money (total money on cryptos + bank savings)
 
 
-async def total_usd(user: Optional[ModelUser] = None) -> float:
+async def total_usd(user: ModelUser) -> float:
     logger.info("Calculating total money in usd (total crypto money + bank savings)")
 
     total = await total_crypto_usd(user)
-    currency_pair = await async_get_symbol_ticker(EUR_USDT)
+    currency_pair = await async_get_symbol_ticker(
+        user.active_exchange.async_connection, EUR_USDT
+    )
 
     total_usd = float(
         "{:.2f}".format(total + user.savings_euros * float(currency_pair.price))
@@ -67,7 +67,7 @@ async def total_usd(user: Optional[ModelUser] = None) -> float:
     return total_usd
 
 
-async def total_euros(user: Optional[ModelUser] = None) -> float:
+async def total_euros(user: ModelUser) -> float:
     logger.info("Calculating total money in euros (total crypto money + bank savings)")
     total = await total_crypto_euros(user)
     total_euros = float("{:.2f}".format(total + user.savings_euros))
@@ -78,11 +78,13 @@ async def total_euros(user: Optional[ModelUser] = None) -> float:
 # Total profit (total money on cryptos - investment)
 
 
-async def profit_usd(user: Optional[ModelUser] = None) -> float:
+async def profit_usd(user: ModelUser) -> float:
     logger.info("Calculating total profit in usd (total crypto money - investment)")
 
     total = total_crypto_usd(user)
-    currency_pair = await async_get_symbol_ticker(EUR_USDT)
+    currency_pair = await async_get_symbol_ticker(
+        user.active_exchange.async_connection, EUR_USDT
+    )
 
     diff = float(
         "{:.2f}".format(
@@ -93,7 +95,7 @@ async def profit_usd(user: Optional[ModelUser] = None) -> float:
     return diff
 
 
-async def profit_euros(user: Optional[ModelUser] = None) -> float:
+async def profit_euros(user: ModelUser) -> float:
     logger.info("Calculating total profit in euros (total crypto money - investment)")
     total = await total_crypto_euros(user)
     diff = float("{:.2f}".format(total - user.investment_euros))
@@ -104,13 +106,12 @@ async def profit_euros(user: Optional[ModelUser] = None) -> float:
 # Total invested money
 
 
-async def invested_usd(user: Optional[ModelUser] = None) -> float:
+async def invested_usd(user: ModelUser) -> float:
     logger.info("Calculating total investment in usd")
 
-    if not user:
-        raise NoUserFound(value=user)
-
-    currency_pair = await async_get_symbol_ticker(EUR_USDT)
+    currency_pair = await async_get_symbol_ticker(
+        user.active_exchange.async_connection, EUR_USDT
+    )
 
     invested_usd = float(
         "{:.2f}".format(user.investment_euros * float(currency_pair.price))
@@ -119,11 +120,8 @@ async def invested_usd(user: Optional[ModelUser] = None) -> float:
     return invested_usd
 
 
-async def invested_euros(user: Optional[ModelUser] = None) -> float:
+async def invested_euros(user: ModelUser) -> float:
     logger.info("Calculating total investment in euros")
-
-    if not user:
-        raise NoUserFound(value=user)
 
     investment = float("{:.2f}".format(user.investment_euros))
     logger.info("Investment: %f euros", investment)

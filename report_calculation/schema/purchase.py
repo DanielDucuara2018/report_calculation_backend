@@ -15,7 +15,6 @@ class PurchaseRequest(BaseModel):
 
 class PurchaseResponse(PurchaseRequest):
 
-    user_id: Optional[str] = None
     purchase_id: Optional[str] = None
     gain: Optional[float] = None
     update_date: Optional[datetime] = None

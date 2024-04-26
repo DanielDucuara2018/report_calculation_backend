@@ -14,7 +14,6 @@ class CurrencyPairRequest(BaseModel):
 class CurrencyPairResponse(CurrencyPairRequest):
 
     symbol: Optional[str] = None
-    user_id: Optional[str] = None
     price: Optional[float] = None
     creation_date: Optional[datetime] = None
     update_date: Optional[datetime] = None

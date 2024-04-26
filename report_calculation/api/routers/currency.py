@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends
 
 from report_calculation.actions.currency import create, delete, read, update
 from report_calculation.actions.user import get_current_user
+from report_calculation.model import User
 from report_calculation.schema import (
     CurrencyPairRequest,
     CurrencyPairResponse,
@@ -36,14 +37,17 @@ async def read_currency(
     symbol: Optional[str] = None, current_user: UserResponse = Depends(get_current_user)
 ) -> Union[list[CurrencyPairResponse], CurrencyPairResponse]:
     user_id = current_user.user_id
+    exchange_connection = User.get(user_id=user_id).active_exchange.sync_connection
     if symbol:
         currency = read(user_id, symbol)
         return CurrencyPairResponse(
-            price=currency.price, **asdict(read(user_id, symbol))
+            price=currency.price(exchange_connection), **asdict(read(user_id, symbol))
         )
     currencies = read(user_id)
     return [
-        CurrencyPairResponse(price=currency.price, **asdict(currency))
+        CurrencyPairResponse(
+            price=currency.price(exchange_connection), **asdict(currency)
+        )
         for currency in currencies
     ]
 

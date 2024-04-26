@@ -18,7 +18,7 @@ def create(
     result = ModelTelegram(
         user_id=user_id, telegram_id=telegram_id, **dict(telegram_info)
     ).create()
-    logger.info("Added %s", result)
+    logger.info("Added telegram %s for user %s", telegram_id, user_id)
     return result
 
 
@@ -27,6 +27,13 @@ def create(
 
 def run(user_id: str, telegram_id: str) -> bool:
     return ModelTelegram.get(user_id=user_id, telegram_id=telegram_id).run()
+
+
+# respawn Telegram bot
+
+
+def respawn(user_id: str, telegram_id: str) -> bool:
+    return ModelTelegram.get(user_id=user_id, telegram_id=telegram_id).respawn()
 
 
 # stop Telegram bot
@@ -42,7 +49,7 @@ def stop(user_id: str, telegram_id: str) -> bool:
 def delete(user_id: str, telegram_id: str) -> ModelTelegram:
     logger.info("Deleting telegram info %s for user %s", telegram_id, user_id)
     result = ModelTelegram.get(user_id=user_id, telegram_id=telegram_id).delete()
-    logger.info("Deleted %s", result)
+    logger.info("Deleted telegram %s of user %s", telegram_id, user_id)
     return result
 
 
@@ -59,7 +66,7 @@ def read(
     else:
         logger.info("Reading telegram data for user %s", user_id)
         result = ModelTelegram.find(user_id=user_id)
-    logger.info("Result %s", result)
+    logger.info("Found Data for telegram %s of user %s", telegram_id, user_id)
     return result
 
 
@@ -73,5 +80,5 @@ def update(
     result = ModelTelegram.get(user_id=user_id, telegram_id=telegram_id).update(
         **dict(telegram_info)
     )
-    logger.info("Result %s", result)
+    logger.info("Updated telegram %s of user", telegram_id, user_id)
     return result

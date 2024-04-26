@@ -12,5 +12,4 @@ class ExchangeRequest(BaseModel):
 
 class ExchangeResponse(ExchangeRequest):
 
-    user_id: Optional[str] = None
     exchange_name: Optional[str] = None

@@ -55,26 +55,38 @@ class User(Base, Resource):
     # association between User -> CurrencyPair
     currency_pairs: list["CurrencyPair"] = field(
         default_factory=list,
-        metadata={"sa": relationship("CurrencyPair")},
+        metadata={"sa": relationship("CurrencyPair", uselist=True)},
     )
 
     # association between User -> Purchases
     purchases: list["Purchase"] = field(
         default_factory=list,
-        metadata={"sa": relationship("Purchase")},
+        metadata={"sa": relationship("Purchase", uselist=True, overlaps="purchases")},
     )
 
     # association between User -> Telegram
     telegrams: list["Telegram"] = field(
         default_factory=list,
-        metadata={"sa": relationship("Telegram")},
+        metadata={"sa": relationship("Telegram", uselist=True)},
     )
 
     # association between User -> Exchange
     exchanges: list["Exchange"] = field(
         default_factory=list,
-        metadata={"sa": relationship("Telegram")},
+        metadata={"sa": relationship("Exchange", uselist=True)},
     )
+
+    @property
+    def active_telgram_bot(self) -> Optional[Telegram]:
+        if self.telegrams:
+            return self.telegrams[0]
+        return None
+
+    @property
+    def active_exchange(self) -> Optional[Exchange]:
+        if self.exchanges:
+            return self.exchanges[0]
+        return None
 
     @property
     def password(self) -> bytes:

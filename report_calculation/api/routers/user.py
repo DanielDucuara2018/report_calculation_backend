@@ -1,6 +1,7 @@
-from datetime import timedelta
+from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Cookie, Depends, HTTPException, status
+from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordRequestForm
 
 from report_calculation.actions.user import (
@@ -9,6 +10,7 @@ from report_calculation.actions.user import (
     create,
     create_access_token,
     delete,
+    generate_expiration_time,
     get_current_user,
     read,
     update,
@@ -26,6 +28,7 @@ router = APIRouter(
 @router.post("/token")
 async def login_for_access_token(
     form_data: OAuth2PasswordRequestForm = Depends(),
+    refreshTokenId: Optional[str] = Cookie(None),
 ) -> Token:
     user = authenticate_user(form_data.username, form_data.password)
     if not user:
@@ -34,11 +37,29 @@ async def login_for_access_token(
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
+
+    expiration_time = generate_expiration_time(delta=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         data={"sub": user.username},
-        expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
+        expiration_time=expiration_time,
     )
-    return Token(access_token=access_token, token_type="bearer")
+
+    response = JSONResponse(
+        content=Token(
+            access_token=access_token,
+            token_type="bearer",
+            token_expiry=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+        ).dict(),
+    )
+
+    response.set_cookie(
+        key="sessionid",
+        value="iskksioskassyidd",  # refreshTokenId,
+        expires=expiration_time,
+        httponly=True,
+    )
+
+    return response
 
 
 # add new user in database

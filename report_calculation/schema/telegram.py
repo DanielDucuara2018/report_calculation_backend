@@ -11,5 +11,4 @@ class TelegramRequest(BaseModel):
 
 class TelegramResponse(TelegramRequest):
 
-    user_id: Optional[str] = None
     telegram_id: Optional[str] = None

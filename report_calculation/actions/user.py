@@ -15,10 +15,10 @@ from report_calculation.utils import check_password_hash
 logger = logging.getLogger(__name__)
 
 # to get a string like this run:
-# openssl rand -hex 32
+# openssl rand -hex 32 TODO Store better these variables
 SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 5
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="users/token")
 
@@ -28,7 +28,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="users/token")
 def create(user: SchemaUserRequest) -> ModelUser:
     logger.info("Adding new user")
     result = ModelUser(**dict(user)).create()
-    logger.info("Added %s", result)
+    logger.info("Added new user %s", result.user_id)
     return result
 
 
@@ -38,7 +38,7 @@ def create(user: SchemaUserRequest) -> ModelUser:
 def delete(user_id: str) -> ModelUser:
     logger.info("Deleting %s user", user_id)
     result = ModelUser.get(user_id=user_id).delete()
-    logger.info("Deleted %s", result)
+    logger.info("Deleted user %s", user_id)
     return result
 
 
@@ -52,7 +52,7 @@ def read(user_id: Optional[str] = None, **kwargs) -> Union[ModelUser, list[Model
     else:
         logger.info("Reading all data")
         result = ModelUser.find(**kwargs)
-    logger.info("Result %s", result)
+    logger.info("Data found for user %s", user_id)
     return result
 
 
@@ -62,7 +62,7 @@ def read(user_id: Optional[str] = None, **kwargs) -> Union[ModelUser, list[Model
 def update(user_id: str, data: SchemaUserRequest) -> ModelUser:
     logger.info("Updating %s with data %s", user_id, data)
     result = ModelUser.get(user_id=user_id).update(**dict(data))
-    logger.info("Result %s", result)
+    logger.info("Updated user %s", user_id)
     return result
 
 
@@ -76,16 +76,16 @@ def authenticate_user(username: str, password: str) -> Optional[ModelUser]:
     return None
 
 
+def generate_expiration_time(delta: int = 15) -> datetime:
+    return datetime.now(timezone.utc) + timedelta(minutes=delta)
+
+
 # create User access token
 
 
-def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
+def create_access_token(data: dict, expiration_time: datetime) -> str:
     to_encode = data.copy()
-    if expires_delta:
-        expire = datetime.now(timezone.utc) + expires_delta
-    else:
-        expire = datetime.now(timezone.utc) + timedelta(minutes=15)
-    to_encode.update({"exp": expire})
+    to_encode.update({"exp": expiration_time})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
 
