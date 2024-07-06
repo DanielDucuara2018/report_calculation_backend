@@ -5,6 +5,7 @@ Revises: 3f6496c5961a
 Create Date: 2024-03-08 10:44:03.777746
 
 """
+
 import sqlalchemy as sa
 from sqlalchemy.dialects.postgresql import ENUM
 
@@ -56,3 +57,4 @@ def downgrade():
     )
     op.create_primary_key("exchange_pkey", "exchange", ["exchange_name"])
     op.alter_column("exchange", "user_id", existing_type=sa.VARCHAR(), nullable=True)
+    enum_exchange_name.drop(op.get_bind())

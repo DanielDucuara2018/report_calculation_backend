@@ -17,6 +17,7 @@ from alembic.script import ScriptDirectory
 from report_calculation.model.base import mapper_registry
 
 logger = logging.getLogger(__name__)
+# logging.getLogger("sqlalchemy.engine").setLevel(logging.INFO)
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ALEMBIC_PATH = os.path.join(ROOT, "alembic")

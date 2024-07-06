@@ -64,7 +64,7 @@ async def calculate_total_usd(
 @router.on_event("startup")
 @repeat_every(seconds=60 * 60 * 24)  # 1 minute
 async def get_daily_crypto_euros() -> None:
-    # TODO check if already exist a value in DB for TODAY. If not, add it
+    # TODO check if already exist a value in DB from TODAY. If not, add it
     # TODO create a new table containing the 4 values in euros (id, user_id, values, creation_date)
     logger.info("Getting daily crypto portafolio")
     for user in read():
