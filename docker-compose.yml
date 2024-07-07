@@ -15,8 +15,10 @@ services:
     networks:
       report_bridge:
         ipv4_address: 169.254.6.2
-    env_file:
-      - .env
+        aliases:
+          - "report-backend.portafolio"
+    ports:
+      - 3201:3201
     volumes:
       - ./:/app/
       - /app/report_calculation.egg-info/
