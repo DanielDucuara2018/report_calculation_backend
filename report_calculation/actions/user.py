@@ -59,9 +59,17 @@ def read(user_id: Optional[str] = None, **kwargs) -> Union[ModelUser, list[Model
 # update User
 
 
-def update(user_id: str, data: SchemaUserRequest) -> ModelUser:
-    logger.info("Updating %s with data %s", user_id, data)
-    result = ModelUser.get(user_id=user_id).update(**dict(data))
+def update(
+    user_id: str,
+    data: Optional[SchemaUserRequest] = None,
+    is_admin: Optional[bool] = None,
+) -> ModelUser:
+    logger.info("Updating %s with data %s", user_id, data or is_admin)
+    user = ModelUser.get(user_id=user_id)
+    if data:
+        result = user.update(**dict(data))
+    else:
+        result = user.update(is_admin=is_admin)
     logger.info("Updated user %s", user_id)
     return result
 

@@ -16,6 +16,7 @@ class UserRequest(BaseModel):
 
 class UserResponse(UserRequest):
 
+    is_admin: Optional[bool] = None
     user_id: Optional[str] = None
     update_date: Optional[datetime] = None
     creation_date: Optional[datetime] = None

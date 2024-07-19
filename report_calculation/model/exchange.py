@@ -16,6 +16,7 @@ from report_calculation.model.resource import Resource
 
 logger = logging.getLogger(__name__)
 
+
 # Enumeration classes
 class ExchangeName(str, Enum):
     BINANCE = "binance"
@@ -52,13 +53,13 @@ class Exchange(Base, Resource):
     secret_key: str = field(metadata={"sa": Column(String, nullable=False)})
 
     user_id: str = field(
-        metadata={"sa": Column(String, ForeignKey("user.user_id"), primary_key=True)}
+        metadata={"sa": Column(String, ForeignKey("account.user_id"), primary_key=True)}
     )
 
     __table_args__ = (
         ForeignKeyConstraint(
             ["user_id"],
-            ["user.user_id"],
+            ["account.user_id"],
             name="exchange_user_id_fkey",
             onupdate="CASCADE",
             ondelete="CASCADE",

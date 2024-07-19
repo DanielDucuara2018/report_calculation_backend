@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Optional
 
-from sqlalchemy import Column, Float, LargeBinary, String
+from sqlalchemy import Boolean, Column, Float, LargeBinary, String
 from sqlalchemy.orm import relationship
 
 from report_calculation.model.base import Base, mapper_registry
@@ -23,7 +23,7 @@ if TYPE_CHECKING:
 @dataclass
 class User(Base, Resource):
 
-    __tablename__ = "user"
+    __tablename__ = "account"
 
     __sa_dataclass_metadata_key__ = "sa"
 
@@ -43,6 +43,10 @@ class User(Base, Resource):
     )
 
     email: Optional[str] = field(metadata={"sa": Column(String)})
+
+    is_admin: bool = field(
+        default=False, metadata={"sa": Column(Boolean, nullable=False)}
+    )
 
     investment_euros: Optional[float] = field(
         default_factory=float, metadata={"sa": Column(Float, nullable=False)}

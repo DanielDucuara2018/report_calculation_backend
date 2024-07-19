@@ -29,7 +29,7 @@ class Portafolio(Base, Resource):
         },
     )
 
-    user_id: str = field(metadata={"sa": Column(String, ForeignKey("user.user_id"))})
+    user_id: str = field(metadata={"sa": Column(String, ForeignKey("account.user_id"))})
 
     total_euros: float = field(metadata={"sa": Column(Float, nullable=False)})
 

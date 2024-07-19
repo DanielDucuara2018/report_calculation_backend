@@ -34,7 +34,7 @@ class Telegram(Base, Resource):
     token: str = field(metadata={"sa": Column(String, nullable=False)})
 
     user_id: str = field(
-        metadata={"sa": Column(String, ForeignKey("user.user_id"), primary_key=True)}
+        metadata={"sa": Column(String, ForeignKey("account.user_id"), primary_key=True)}
     )
 
     pid: Optional[int] = field(
@@ -44,7 +44,7 @@ class Telegram(Base, Resource):
     __table_args__ = (
         ForeignKeyConstraint(
             ["user_id"],
-            ["user.user_id"],
+            ["account.user_id"],
             name="telegram_user_id_fkey",
             onupdate="CASCADE",
             ondelete="CASCADE",
