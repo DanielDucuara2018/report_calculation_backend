@@ -1,6 +1,7 @@
+from datetime import date
 from typing import Any, Optional, Type, TypeVar
 
-from sqlalchemy import ARRAY
+from sqlalchemy import ARRAY, Date, cast
 from sqlalchemy.orm import registry
 from sqlalchemy.orm.decl_api import DeclarativeMeta
 
@@ -40,9 +41,13 @@ class Base:
             if not isinstance(value, list):
                 value = to_list(value)
 
+            is_date = any(isinstance(v, date) for v in value)
+
             if isinstance(column.type, ARRAY):
                 filter = column.overlap(value)
             else:
+                if is_date:
+                    column = cast(column, Date)
                 filter = column.in_(value)
 
             if for_equality:

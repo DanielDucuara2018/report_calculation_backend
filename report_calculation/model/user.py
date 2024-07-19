@@ -8,8 +8,7 @@ from sqlalchemy.orm import relationship
 
 from report_calculation.model.base import Base, mapper_registry
 from report_calculation.model.exchange import Exchange
-
-# from report_calculation.model.history import Portafolio as PortafolioHistory
+from report_calculation.model.history import Portafolio as PortafolioHistory
 from report_calculation.model.purchase import Purchase
 from report_calculation.model.resource import Resource
 from report_calculation.model.telegram import Telegram
@@ -83,10 +82,10 @@ class User(Base, Resource):
     )
 
     # association between User -> Exchange
-    # portafolio: list["PortafolioHistory"] = field(
-    #     default_factory=list,
-    #     metadata={"sa": relationship("Portafolio", uselist=True)},
-    # )
+    portafolio: list["PortafolioHistory"] = field(
+        default_factory=list,
+        metadata={"sa": relationship("Portafolio", uselist=True)},
+    )
 
     @property
     def active_telgram_bot(self) -> Optional[Telegram]:

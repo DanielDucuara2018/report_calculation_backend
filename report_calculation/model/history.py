@@ -33,8 +33,8 @@ class Portafolio(Base, Resource):
 
     total_euros: float = field(metadata={"sa": Column(Float, nullable=False)})
 
-    total_currency: float = field(metadata={"sa": Column(Float, nullable=False)})
+    total_currency_euros: float = field(metadata={"sa": Column(Float, nullable=False)})
 
-    profit_currency: float = field(metadata={"sa": Column(Float, nullable=False)})
+    profit_euros: float = field(metadata={"sa": Column(Float, nullable=False)})
 
-    investment: float = field(metadata={"sa": Column(Float, nullable=False)})
+    investment_euros: float = field(metadata={"sa": Column(Float, nullable=False)})

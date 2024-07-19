@@ -1,4 +1,6 @@
 import logging
+from asyncio import gather
+from datetime import date
 from enum import Enum
 
 from fastapi import APIRouter, Depends
@@ -15,6 +17,7 @@ from report_calculation.actions.calculate import (
     total_usd,
 )
 from report_calculation.actions.user import get_current_user, read
+from report_calculation.model import Portafolio as ModelPortafolio
 from report_calculation.model import User as ModelUser
 from report_calculation.schema import UserResponse
 
@@ -62,11 +65,27 @@ async def calculate_total_usd(
 
 
 @router.on_event("startup")
-@repeat_every(seconds=60 * 60 * 24)  # 1 minute
+@repeat_every(seconds=60 * 60 * 24)  # 1 day
 async def get_daily_crypto_euros() -> None:
-    # TODO check if already exist a value in DB from TODAY. If not, add it
-    # TODO create a new table containing the 4 values in euros (id, user_id, values, creation_date)
-    logger.info("Getting daily crypto portafolio")
+    today = date.today()
+    logger.info("Getting daily crypto portafolio %s", today)
     for user in read():
-        value = await total_crypto_euros(user)
-        logger.info("Current value %s", value)
+        if not (last_value := ModelPortafolio.find(creation_date=today)):
+            logger.info("Nothig today %s", last_value)
+            values = await gather(
+                *(
+                    func(user)
+                    for func in [total_euros, total_crypto_euros, profit_euros]
+                )
+            )
+            result = ModelPortafolio(
+                user_id=user.user_id,
+                investment_euros=user.investment_euros,
+                description=f"Value for day {today}",
+                **dict(
+                    zip(["total_euros", "total_currency_euros", "profit_euros"], values)
+                ),
+            ).create()
+            logger.info("Added new portafolio history %s", result.portafolio_id)
+        else:
+            logger.info("The last values were %s", last_value)
