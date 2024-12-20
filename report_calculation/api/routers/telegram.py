@@ -34,6 +34,7 @@ telegram_bot_actions = {
     TelegramBotActions.RESPAWN: respawn,
 }
 
+
 ## Telegram
 # add new telegram info in database
 @router.post("/")

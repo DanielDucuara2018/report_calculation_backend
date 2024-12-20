@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 
 class UserRequest(BaseModel):
@@ -12,6 +12,7 @@ class UserRequest(BaseModel):
     password: Optional[str] = None
     email: Optional[str] = None
     is_admin: Optional[bool] = None
+
 
 class UserResponse(UserRequest):
 

@@ -173,4 +173,7 @@ pyvenv.cfg
 pip-selfcheck.json
 
 # telegram bot files
-arbitrarycallbackdatabot
+arbitrarycallbackdatabot_*
+supervisord.pid
+
+

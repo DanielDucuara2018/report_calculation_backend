@@ -20,6 +20,7 @@ router = APIRouter(
 
 # TODO check if all methods can use CurrencyPairEntry
 
+
 ## Currencies
 # add new crypto in database
 @router.post("/")

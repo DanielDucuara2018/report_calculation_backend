@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from typing import Optional
 
 import click
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update, User
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.constants import ParseMode
 from telegram.ext import (
     Application,
@@ -109,7 +109,7 @@ class TelegramBot:
         self, update_handler: Update, context: ContextTypes.DEFAULT_TYPE
     ) -> None:
         """Sends a message with three inline buttons attached."""
-        logger.info(f"Launching keyboard buttons")
+        logger.info("Launching keyboard buttons")
         keyboard = [
             [
                 InlineKeyboardButton("total usd", callback_data="total_usd"),
@@ -145,7 +145,7 @@ class TelegramBot:
         self, update_handler: Update, context: ContextTypes.DEFAULT_TYPE
     ) -> None:
         """Displays info on how to use the bot."""
-        logger.info(f"Launching help command")
+        logger.info("Launching help command")
         await update_handler.message.reply_text("Use /start to test this bot.")
 
     # Total money on cryptos
@@ -153,7 +153,7 @@ class TelegramBot:
     async def get_total_crypto_usd(
         self, update_handler: Update, context: ContextTypes.DEFAULT_TYPE
     ) -> None:
-        logger.info(f"Running get_total_crypto_usd")
+        logger.info("Running get_total_crypto_usd")
         await update_handler.callback_query.edit_message_text(
             "Calculating total crypto money in usd"
         )
@@ -164,7 +164,7 @@ class TelegramBot:
     async def get_total_crypto_euros(
         self, update_handler: Update, context: ContextTypes.DEFAULT_TYPE
     ) -> None:
-        logger.info(f"Running get_total_crypto_euros")
+        logger.info("Running get_total_crypto_euros")
         await update_handler.callback_query.edit_message_text(
             "Calculating total crypto money in euros"
         )
@@ -177,7 +177,7 @@ class TelegramBot:
     async def get_total_usd(
         self, update_handler: Update, context: ContextTypes.DEFAULT_TYPE
     ) -> None:
-        logger.info(f"Running get_total_usd")
+        logger.info("Running get_total_usd")
         await update_handler.callback_query.edit_message_text(
             "Calculating total money in usd (total crypto money + bank savings)"
         )
@@ -188,7 +188,7 @@ class TelegramBot:
     async def get_total_euros(
         self, update_handler: Update, context: ContextTypes.DEFAULT_TYPE
     ) -> None:
-        logger.info(f"Running get_total_euros")
+        logger.info("Running get_total_euros")
         await update_handler.callback_query.edit_message_text(
             "Calculating total money in euros (total crypto money + bank savings)"
         )
@@ -201,7 +201,7 @@ class TelegramBot:
     async def get_profit_usd(
         self, update_handler: Update, context: ContextTypes.DEFAULT_TYPE
     ) -> None:
-        logger.info(f"Running get_profit_usd")
+        logger.info("Running get_profit_usd")
         await update_handler.callback_query.edit_message_text(
             "Calculating total profit in usd (total crypto money - investment)"
         )
@@ -212,7 +212,7 @@ class TelegramBot:
     async def get_profit_euros(
         self, update_handler: Update, context: ContextTypes.DEFAULT_TYPE
     ) -> None:
-        logger.info(f"Running get_profit_euros")
+        logger.info("Running get_profit_euros")
         await update_handler.callback_query.edit_message_text(
             "Calculating total profit in euros (total crypto money - investment)"
         )
@@ -225,7 +225,7 @@ class TelegramBot:
     async def get_investment_usd(
         self, update_handler: Update, context: ContextTypes.DEFAULT_TYPE
     ) -> None:
-        logger.info(f"Running get_investment_usd")
+        logger.info("Running get_investment_usd")
         await update_handler.callback_query.edit_message_text(
             "Total invested money in usd"
         )
@@ -236,7 +236,7 @@ class TelegramBot:
     async def get_investment_euros(
         self, update_handler: Update, context: ContextTypes.DEFAULT_TYPE
     ) -> None:
-        logger.info(f"Running get_investment_euros")
+        logger.info("Running get_investment_euros")
         await update_handler.callback_query.edit_message_text(
             "Total invested money in euros"
         )
@@ -250,7 +250,7 @@ class TelegramBot:
     async def create_currency(
         self, update_handler: Update, context: ContextTypes.DEFAULT_TYPE
     ) -> None:
-        logger.info(f"Running create_currency")
+        logger.info("Running create_currency")
 
         user: ModelUser = self.user
         if not user:
@@ -265,7 +265,7 @@ class TelegramBot:
             )
         else:
             await update_handler.message.reply_text(
-                f"Please introduce symbol and quantity as arguments"
+                "Please introduce symbol and quantity as arguments"
             )
 
     # get crypto data
@@ -273,7 +273,7 @@ class TelegramBot:
     async def read_currency(
         self, update_handler: Update, context: ContextTypes.DEFAULT_TYPE
     ) -> None:
-        logger.info(f"Running read_currency")
+        logger.info("Running read_currency")
 
         user: ModelUser = self.user
         if not user:
@@ -286,7 +286,7 @@ class TelegramBot:
                 f"Result {read(user.user_id, symbol)}"
             )
         else:
-            await update_handler.message.reply_text(f"Reading all data")
+            await update_handler.message.reply_text("Reading all data")
             currencies = read(user.user_id)
             message = "Result: \n"
             for currency in currencies:  # type: ignore
@@ -298,7 +298,7 @@ class TelegramBot:
     async def update_currency(
         self, update_handler: Update, context: ContextTypes.DEFAULT_TYPE
     ) -> None:
-        logger.info(f"Running update_currency")
+        logger.info("Running update_currency")
 
         user: ModelUser = self.user
         if not user:
@@ -313,7 +313,7 @@ class TelegramBot:
             )
         else:
             await update_handler.message.reply_text(
-                f"Please introduce symbol and quantity as arguments"
+                "Please introduce symbol and quantity as arguments"
             )
 
     # delete existing from db
@@ -321,7 +321,7 @@ class TelegramBot:
     async def delete_currency(
         self, update_handler: Update, context: ContextTypes.DEFAULT_TYPE
     ) -> None:
-        logger.info(f"Running delete_currency")
+        logger.info("Running delete_currency")
 
         user: ModelUser = self.user
         if not user:
@@ -334,7 +334,7 @@ class TelegramBot:
             )
         else:
             await update_handler.message.reply_text(
-                f"Please introduce symbol as arguments"
+                "Please introduce symbol as arguments"
             )
 
     # Error handlers
@@ -357,7 +357,7 @@ class TelegramBot:
     async def bot_info(
         self, update_handler: Update, context: ContextTypes.DEFAULT_TYPE
     ) -> None:
-        logger.info(f"Geting bot information")
+        logger.info("Geting bot information")
         await update_handler.message.reply_text(
             f"bot information {await context.bot.get_me()}"
         )

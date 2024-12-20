@@ -14,6 +14,7 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
+
 ## Purchases
 # add new purchase in database
 @router.post("/")

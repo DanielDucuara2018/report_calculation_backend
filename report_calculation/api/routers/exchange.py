@@ -16,6 +16,7 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
+
 ## Users
 # add new exchange info in database
 @router.post("/")
