@@ -26,8 +26,12 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="users/token")
 
 
 def create(user: SchemaUserRequest) -> ModelUser:
-    logger.info("Adding new user")
-    result = ModelUser(**dict(user)).create()
+    logger.info("Adding new user %s", user)
+    user_dict = dict(user)
+    password = user_dict.pop("password")
+    result = ModelUser(**user_dict)
+    result.password = password
+    result.create()
     logger.info("Added new user %s", result.user_id)
     return result
 

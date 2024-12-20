@@ -38,7 +38,7 @@ class Telegram(Base, Resource):
     )
 
     pid: Optional[int] = field(
-        metadata={"sa": Column(Integer, default=None, nullable=True)}
+        init=False, metadata={"sa": Column(Integer, default=None, nullable=True)}
     )
 
     __table_args__ = (

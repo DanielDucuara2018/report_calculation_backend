@@ -38,7 +38,7 @@ class User(Base, Resource):
     username: str = field(metadata={"sa": Column("user_name", String, nullable=False)})
 
     _password: bytes = field(
-        metadata={"sa": Column("password", LargeBinary, nullable=False)}
+        init = False, metadata={"sa": Column("password", LargeBinary, nullable=False)}
     )
 
     email: Optional[str] = field(metadata={"sa": Column(String)})

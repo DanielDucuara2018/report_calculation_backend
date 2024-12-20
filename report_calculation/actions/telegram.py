@@ -17,7 +17,9 @@ def create(
     logger.info("Adding telegram information for user %s", user_id)
     result = ModelTelegram(
         user_id=user_id, telegram_id=telegram_id, **dict(telegram_info)
-    ).create()
+    )
+    result.run()
+    result.create()
     logger.info("Added telegram %s for user %s", telegram_id, user_id)
     return result
 
