@@ -19,7 +19,7 @@ The **Report Calculation Backend** is a Python-based service designed to automat
 
 * Python 3.9
 * Docker
-* Docker Compose([GitHub][1], [GitHub][2])
+* Docker Compose
 
 ### Installation
 
